@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Check if diesel_cli is already installed
-if ! command -v diesel >/dev/null 2>&1; then
-  echo "diesel_cli is not installed. Installing..."
-  cargo install diesel_cli --no-default-features --features postgres
+# Check if sea-orm-cli is already installed
+if ! command -v sea-orm-cli >/dev/null 2>&1; then
+  echo "sea-orm-cli is not installed. Installing..."
+  cargo install sea-orm-cli
 else
-  echo "diesel_cli is already installed."
+  echo "sea-orm-cli is already installed."
 fi
