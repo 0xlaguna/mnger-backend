@@ -1,6 +1,7 @@
 [package]
 name = "mnger-app"
 version = "0.1.0"
+authors = ["Maykol Laguna <lagunamichael2@outlook.com>"]
 edition = "2021"
 
 [workspace]
