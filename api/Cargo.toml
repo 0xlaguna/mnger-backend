@@ -10,7 +10,7 @@ async-stream = { version = "0.3.5" }
 async-trait = { version = "0.1.73" }
 futures = { version = "0.3.28" }
 futures-util = { version = "0.3.28" }
-rocket = { version = "=0.5.0-rc.3", features = ["json"] }
+rocket = { version = "=0.5.0", features = ["json"] }
 serde_json = { version = "1.0.107" }
 tokio = "1.32.0"
 dotenvy = "0.15"
@@ -20,11 +20,12 @@ version = "0.5.2"
 features = ["rocket_okapi"]
 
 [dependencies.rocket_okapi]
-version = "0.8.0-rc.2"
+git = "https://github.com/GREsau/okapi.git"
+branch = "master"
 features = ["swagger", "rapidoc","rocket_db_pools"]
 
 [dependencies.rocket_dyn_templates]
-version = "=0.1.0-rc.3"
+version = "0.1.0"
 features = ["handlebars", "tera"]
 
 [dependencies.rocket_cors]

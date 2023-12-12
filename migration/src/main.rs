@@ -4,7 +4,6 @@ use sea_orm_migration::prelude::*;
 async fn main() {
     let key = "DATABASE_URL";
     if std::env::var(key).is_err() {
-        // Getting the database URL from Rocket.toml if it's not set
         let figment = rocket::Config::figment();
         let database_url: String = figment
             .extract_inner("databases.sea_orm.url")
