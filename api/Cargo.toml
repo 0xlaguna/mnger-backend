@@ -10,25 +10,26 @@ async-stream = { version = "0.3.5" }
 async-trait = { version = "0.1.73" }
 futures = { version = "0.3.28" }
 futures-util = { version = "0.3.28" }
-rocket = { version = "=0.5.0", features = ["json"] }
+rocket = { version = "0.5.0", features = ["json"] }
+rocket_dyn_templates = { version = "0.1.0-rc.1", features = ["tera"] }
 serde_json = { version = "1.0.107" }
-tokio = "1.32.0"
+tokio = "1.20.0"
+serde = "1.0"
 dotenvy = "0.15"
+dto = { path = "../dto" }
+entity = { path = "../entity" }
+migration = { path = "../migration" }
+mnger-api-service = { path = "../service" }
 
 [dependencies.sea-orm-rocket]
-version = "0.5.2"
+version = "0.5.1"
 features = ["rocket_okapi"]
 
 [dependencies.rocket_okapi]
 git = "https://github.com/GREsau/okapi.git"
 branch = "master"
-features = ["swagger", "rapidoc","rocket_db_pools"]
-
-[dependencies.rocket_dyn_templates]
-version = "0.1.0"
-features = ["handlebars", "tera"]
+features = ["swagger", "rapidoc", "rocket_db_pools"]
 
 [dependencies.rocket_cors]
-git = "https://github.com/lawliet89/rocket_cors.git"
-rev = "54fae070"
+version = "0.6.0"
 default-features = false

@@ -19,7 +19,6 @@ use rocket_cors::{AllowedHeaders, AllowedOrigins, Cors};
 mod pool;
 use pool::Db;
 mod error;
-mod okapi_example;
 
 pub use entity::post;
 pub use entity::post::Entity as Post;

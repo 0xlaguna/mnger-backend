@@ -9,7 +9,7 @@ name = "dto"
 path = "src/lib.rs"
 
 [dependencies]
-rocket = { version = "=0.5.0", features = ["json"] }
+rocket = { version = "0.5.0", features = ["json"] }
 
 [dependencies.entity]
 path = "../entity"
@@ -17,4 +17,4 @@ path = "../entity"
 [dependencies.rocket_okapi]
 git = "https://github.com/GREsau/okapi.git"
 branch = "master"
-features = ["swagger", "rapidoc","rocket_db_pools"]
+features = ["swagger", "rapidoc", "rocket_db_pools"]
