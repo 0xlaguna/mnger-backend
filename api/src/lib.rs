@@ -2,26 +2,140 @@
 extern crate rocket;
 
 use rocket::fairing::{self, AdHoc};
-use rocket::{Build, Rocket};
+use rocket::form::{Context, Form};
+use rocket::fs::{relative, FileServer};
+use rocket::request::FlashMessage;
+use rocket::response::{Flash, Redirect};
+use rocket::{Build, Request, Rocket};
+use rocket_dyn_templates::Template;
+use mnger_api_service::{Mutation, Query};
+use serde_json::json;
 
 use migration::MigratorTrait;
-use sea_orm_rocket::Database;
-
-use rocket_okapi::mount_endpoints_and_merged_docs;
-use rocket_okapi::okapi::openapi3::OpenApi;
-use rocket_okapi::rapidoc::{make_rapidoc, GeneralConfig, HideShowConfig, RapiDocConfig};
-use rocket_okapi::settings::UrlObject;
-use rocket_okapi::swagger_ui::{make_swagger_ui, SwaggerUIConfig};
-
-use rocket::http::Method;
-use rocket_cors::{AllowedHeaders, AllowedOrigins, Cors};
+use sea_orm_rocket::{Connection, Database};
 
 mod pool;
 use pool::Db;
-mod error;
 
-pub use entity::post;
-pub use entity::post::Entity as Post;
+pub use entity::user;
+pub use entity::user::Entity as User;
+
+const DEFAULT_USERS_PER_PAGE: u64 = 5;
+
+#[get("/new")]
+async fn new() -> Template {
+    Template::render("new", &Context::default())
+}
+
+#[post("/", data = "<user_form>")]
+async fn create(conn: Connection<'_, Db>, user_form: Form<user::Model>) -> Flash<Redirect> {
+    let db = conn.into_inner();
+
+    let form = user_form.into_inner();
+
+    Mutation::create_user(db, form)
+        .await
+        .expect("could not insert user");
+
+    Flash::success(Redirect::to("/"), "User successfully added.")
+}
+
+#[post("/<id>", data = "<user_form>")]
+async fn update(
+    conn: Connection<'_, Db>,
+    id: i32,
+    user_form: Form<user::Model>,
+) -> Flash<Redirect> {
+    let db = conn.into_inner();
+
+    let form = user_form.into_inner();
+
+    Mutation::update_user_by_id(db, id, form)
+        .await
+        .expect("could not update user");
+
+    Flash::success(Redirect::to("/"), "User successfully edited.")
+}
+
+#[get("/?<page>&<users_per_page>")]
+async fn list(
+    conn: Connection<'_, Db>,
+    page: Option<u64>,
+    users_per_page: Option<u64>,
+    flash: Option<FlashMessage<'_>>,
+) -> Template {
+    let db = conn.into_inner();
+
+    // Set page number and items per page
+    let page = page.unwrap_or(1);
+    let users_per_page = users_per_page.unwrap_or(DEFAULT_USERS_PER_PAGE);
+    if page == 0 {
+        panic!("Page number cannot be zero");
+    }
+
+    let (users, num_pages) = Query::find_users_in_page(db, page, users_per_page)
+        .await
+        .expect("Cannot find users in page");
+
+    Template::render(
+        "index",
+        json! ({
+            "page": page,
+            "users_per_page": users_per_page,
+            "num_pages": num_pages,
+            "users": users,
+            "flash": flash.map(FlashMessage::into_inner),
+        }),
+    )
+}
+
+#[get("/<id>")]
+async fn edit(conn: Connection<'_, Db>, id: i32) -> Template {
+    let db = conn.into_inner();
+
+    let user: Option<user::Model> = Query::find_user_by_id(db, id)
+        .await
+        .expect("could not find user");
+
+    Template::render(
+        "edit",
+        json! ({
+            "user": user,
+        }),
+    )
+}
+
+#[delete("/<id>")]
+async fn delete(conn: Connection<'_, Db>, id: i32) -> Flash<Redirect> {
+    let db = conn.into_inner();
+
+    Mutation::delete_user(db, id)
+        .await
+        .expect("could not delete User");
+
+    Flash::success(Redirect::to("/"), "User successfully deleted.")
+}
+
+#[delete("/")]
+async fn destroy(conn: Connection<'_, Db>) -> Result<(), rocket::response::Debug<String>> {
+    let db = conn.into_inner();
+
+    Mutation::delete_all_users(db)
+        .await
+        .map_err(|e| e.to_string())?;
+
+    Ok(())
+}
+
+#[catch(404)]
+pub fn not_found(req: &Request<'_>) -> Template {
+    Template::render(
+        "error/404",
+        json! ({
+            "uri": req.uri()
+        }),
+    )
+}
 
 async fn run_migrations(rocket: Rocket<Build>) -> fairing::Result {
     let conn = &Db::fetch(&rocket).unwrap().conn;
@@ -31,99 +145,19 @@ async fn run_migrations(rocket: Rocket<Build>) -> fairing::Result {
 
 #[tokio::main]
 async fn start() -> Result<(), rocket::Error> {
-    let mut building_rocket = rocket::build()
+    rocket::build()
         .attach(Db::init())
         .attach(AdHoc::try_on_ignite("Migrations", run_migrations))
+        .mount("/", FileServer::from(relative!("/static")))
         .mount(
-            "/swagger-ui/",
-            make_swagger_ui(&SwaggerUIConfig {
-                url: "../v1/openapi.json".to_owned(),
-                ..Default::default()
-            }),
+            "/",
+            routes![new, create, delete, destroy, list, edit, update],
         )
-        .mount(
-            "/rapidoc/",
-            make_rapidoc(&RapiDocConfig {
-                title: Some("Rocket/SeaOrm - RapiDoc documentation | RapiDoc".to_owned()),
-                general: GeneralConfig {
-                    spec_urls: vec![UrlObject::new("General", "../v1/openapi.json")],
-                    ..Default::default()
-                },
-                hide_show: HideShowConfig {
-                    allow_spec_url_load: false,
-                    allow_spec_file_load: false,
-                    ..Default::default()
-                },
-                ..Default::default()
-            }),
-        )
-        .attach(cors());
-
-    let openapi_settings = rocket_okapi::settings::OpenApiSettings::default();
-    let custom_route_spec = (vec![], custom_openapi_spec());
-    mount_endpoints_and_merged_docs! {
-        building_rocket, "/v1".to_owned(), openapi_settings,
-            "/additional" => custom_route_spec,
-            "/okapi-example" => okapi_example::get_routes_and_docs(&openapi_settings),
-    };
-
-    building_rocket.launch().await.map(|_| ())
-}
-
-fn cors() -> Cors {
-    let allowed_origins =
-        AllowedOrigins::some_exact(&["http://localhost:8000", "http://127.0.0.1:8000"]);
-
-    rocket_cors::CorsOptions {
-        allowed_origins,
-        allowed_methods: vec![Method::Get, Method::Post, Method::Delete]
-            .into_iter()
-            .map(From::from)
-            .collect(),
-        allowed_headers: AllowedHeaders::all(),
-        allow_credentials: true,
-        ..Default::default()
-    }
-    .to_cors()
-    .unwrap()
-}
-
-fn custom_openapi_spec() -> OpenApi {
-    use rocket_okapi::okapi::openapi3::*;
-    OpenApi {
-        openapi: OpenApi::default_version(),
-        info: Info {
-            title: "SeaOrm-Rocket-Okapi Example".to_owned(),
-            description: Some("API Docs for Rocket/SeaOrm example".to_owned()),
-            terms_of_service: Some("https://github.com/SeaQL/sea-orm#license".to_owned()),
-            contact: Some(Contact {
-                name: Some("SeaOrm".to_owned()),
-                url: Some("https://github.com/SeaQL/sea-orm".to_owned()),
-                email: None,
-                ..Default::default()
-            }),
-            license: Some(License {
-                name: "MIT".to_owned(),
-                url: Some("https://github.com/SeaQL/sea-orm/blob/master/LICENSE-MIT".to_owned()),
-                ..Default::default()
-            }),
-            version: env!("CARGO_PKG_VERSION").to_owned(),
-            ..Default::default()
-        },
-        servers: vec![
-            Server {
-                url: "http://127.0.0.1:8000/v1".to_owned(),
-                description: Some("Localhost".to_owned()),
-                ..Default::default()
-            },
-            Server {
-                url: "https://production-server.com/".to_owned(),
-                description: Some("Remote development server".to_owned()),
-                ..Default::default()
-            },
-        ],
-        ..Default::default()
-    }
+        .register("/", catchers![not_found])
+        .attach(Template::fairing())
+        .launch()
+        .await
+        .map(|_| ())
 }
 
 pub fn main() {

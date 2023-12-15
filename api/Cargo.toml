@@ -16,20 +16,9 @@ serde_json = { version = "1.0.107" }
 tokio = "1.20.0"
 serde = "1.0"
 dotenvy = "0.15"
-dto = { path = "../dto" }
 entity = { path = "../entity" }
 migration = { path = "../migration" }
 mnger-api-service = { path = "../service" }
 
 [dependencies.sea-orm-rocket]
 version = "0.5.1"
-features = ["rocket_okapi"]
-
-[dependencies.rocket_okapi]
-git = "https://github.com/GREsau/okapi.git"
-branch = "master"
-features = ["swagger", "rapidoc", "rocket_db_pools"]
-
-[dependencies.rocket_cors]
-version = "0.6.0"
-default-features = false
