@@ -2,8 +2,9 @@
 extern crate rocket;
 
 use rocket::fairing::{self, AdHoc};
-use rocket::form::{Context, Form};
-use rocket::fs::{relative, FileServer};
+use rocket::serde::json::Json;
+use rocket::http::Status;
+use rocket::form::Form;
 use rocket::request::FlashMessage;
 use rocket::response::{Flash, Redirect};
 use rocket::{Build, Request, Rocket};
@@ -22,22 +23,18 @@ pub use entity::user::Entity as User;
 
 const DEFAULT_USERS_PER_PAGE: u64 = 5;
 
-#[get("/new")]
-async fn new() -> Template {
-    Template::render("new", &Context::default())
-}
 
 #[post("/", data = "<user_form>")]
-async fn create(conn: Connection<'_, Db>, user_form: Form<user::Model>) -> Flash<Redirect> {
+async fn create(conn: Connection<'_, Db>, user_form: Form<user::Model>) -> Result<Json<user::Model>, Status> {
     let db = conn.into_inner();
 
     let form = user_form.into_inner();
 
-    Mutation::create_user(db, form)
-        .await
-        .expect("could not insert user");
+    if Mutation::create_user(db, form.clone()).await.is_err() {
+        return Err(Status::InternalServerError);
+    }
 
-    Flash::success(Redirect::to("/"), "User successfully added.")
+    Ok(Json(form))
 }
 
 #[post("/<id>", data = "<user_form>")]
@@ -148,10 +145,9 @@ async fn start() -> Result<(), rocket::Error> {
     rocket::build()
         .attach(Db::init())
         .attach(AdHoc::try_on_ignite("Migrations", run_migrations))
-        .mount("/", FileServer::from(relative!("/static")))
         .mount(
             "/",
-            routes![new, create, delete, destroy, list, edit, update],
+            routes![create, delete, destroy, list, edit, update],
         )
         .register("/", catchers![not_found])
         .attach(Template::fairing())
