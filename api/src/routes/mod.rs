@@ -1,6 +1,7 @@
 use rocket::{Build, Rocket};
-use serde_json::json;
 use revolt_rocket_okapi::{mount_endpoints_and_merged_docs, revolt_okapi::openapi3::OpenApi, settings::OpenApiSettings};
+
+mod users;
 
 pub fn mount(mut rocket: Rocket<Build>) -> Rocket<Build> {
     let settings = OpenApiSettings::default();

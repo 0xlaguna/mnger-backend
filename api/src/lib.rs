@@ -1,5 +1,9 @@
 #[macro_use]
 extern crate rocket;
+#[macro_use]
+extern crate revolt_rocket_okapi;
+#[macro_use]
+extern crate serde_json;
 
 use rocket::fairing::{self, AdHoc};
 use rocket::serde::json::Json;
