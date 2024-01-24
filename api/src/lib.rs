@@ -18,6 +18,8 @@ use sea_orm_rocket::{Connection, Database};
 mod pool;
 use pool::Db;
 
+pub mod routes;
+
 pub use entity::user;
 pub use entity::user::Entity as User;
 
@@ -142,7 +144,9 @@ async fn run_migrations(rocket: Rocket<Build>) -> fairing::Result {
 
 #[tokio::main]
 async fn start() -> Result<(), rocket::Error> {
-    rocket::build()
+    let rocket = rocket::build();
+
+    routes::mount(rocket)
         .attach(Db::init())
         .attach(AdHoc::try_on_ignite("Migrations", run_migrations))
         .mount(
