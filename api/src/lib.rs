@@ -15,6 +15,9 @@ use serde_json::json;
 use migration::MigratorTrait;
 use sea_orm_rocket::{Connection, Database};
 
+use rocket_cors::{AllowedOrigins, CorsOptions};
+use std::str::FromStr;
+
 mod pool;
 use pool::Db;
 
@@ -146,6 +149,20 @@ async fn run_migrations(rocket: Rocket<Build>) -> fairing::Result {
 async fn start() -> Result<(), rocket::Error> {
     let rocket = rocket::build();
 
+    // Configure CORS
+    let cors = CorsOptions {
+        allowed_origins: AllowedOrigins::All,
+        allowed_methods: [
+            "Get", "Put", "Post", "Delete", "Options", "Head", "Trace", "Connect", "Patch",
+        ]
+        .iter()
+        .map(|s| FromStr::from_str(s).unwrap())
+        .collect(),
+        ..Default::default()
+    }
+    .to_cors()
+    .expect("Failed to create CORS.");
+
     routes::mount(rocket)
         .attach(Db::init())
         .attach(AdHoc::try_on_ignite("Migrations", run_migrations))
@@ -155,6 +172,7 @@ async fn start() -> Result<(), rocket::Error> {
         )
         .register("/", catchers![not_found])
         .attach(Template::fairing())
+        .manage(cors.clone())
         .launch()
         .await
         .map(|_| ())
