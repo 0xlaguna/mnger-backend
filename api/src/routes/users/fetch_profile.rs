@@ -1,6 +1,7 @@
 use sea_orm_rocket::Connection;
 use rocket::serde::json::Json;
-use rocket::http::Status;
+
+use mnger_preon::{Result};
 
 use mnger_api_service::Query;
 
@@ -16,13 +17,10 @@ pub use entity::user;
 
 #[openapi]
 #[get("/<target>/profile")]
-pub async fn req(conn: Connection<'_, Db>, target: i32) -> Result<Json<user::Model>, Status> {
+pub async fn req(conn: Connection<'_, Db>, target: i32) -> Result<Json<user::Model>> {
     let db = conn.into_inner();
 
-    let user: Option<user::Model> = Query::find_user_by_id(db, target)
-        .await
-        .expect("could not find user");
+    let user = Query::find_user_by_id(db, target).await?;
 
-    let json = Json(user);
-    Ok(json)
+    Ok(Json(user))
 }
