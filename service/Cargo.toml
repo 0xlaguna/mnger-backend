@@ -7,6 +7,8 @@ edition = "2021"
 
 [dependencies]
 entity = { path = "../entity" }
+# preon
+mnger-preon = { path = "../preon" }
 
 [dependencies.sea-orm]
 version = "0.12.10"

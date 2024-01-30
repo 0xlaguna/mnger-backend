@@ -2353,6 +2353,7 @@ name = "mnger-api-service"
 version = "0.1.0"
 dependencies = [
  "entity",
+ "mnger-preon",
  "sea-orm",
  "tokio 1.35.1",
 ]
