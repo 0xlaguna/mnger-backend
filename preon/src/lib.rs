@@ -12,3 +12,8 @@ pub mod web;
 pub use web::{Db, EmptyResponse};
 
 pub mod util;
+
+pub use util::{
+    result::{Error, Result},
+    variables,
+};
