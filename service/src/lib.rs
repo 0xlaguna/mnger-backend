@@ -1,10 +1,6 @@
-mod mutation;
-mod query;
-
-pub use mutation::*;
-pub use query::*;
-
 pub use sea_orm;
+
+pub mod operations;
 
 /// Result type with custom Error
 pub type Result<T, E = Error> = std::result::Result<T, E>;

@@ -1,10 +1,7 @@
-use rocket_okapi::okapi::openapi3::OpenApi;
 use rocket::Route;
 
 mod fetch_profile;
 
-pub fn routes() -> (Vec<Route>, OpenApi) {
-    openapi_get_routes_spec![
-        fetch_profile::req,
-    ]
+pub fn user_routes() -> Vec<Route> {
+    routes![fetch_profile::req,]
 }

@@ -1,23 +1,12 @@
 #[macro_use]
 extern crate rocket;
-#[macro_use]
-extern crate rocket_okapi;
-#[macro_use]
-extern crate serde_json;
 
 use rocket::fairing::{self, AdHoc};
-use rocket::serde::json::Json;
-use rocket::http::Status;
-use rocket::form::Form;
-use rocket::request::FlashMessage;
-use rocket::response::{Flash, Redirect};
-use rocket::{Build, Request, Rocket};
+use rocket::{Build, Rocket};
 use rocket_dyn_templates::Template;
-use mnger_api_service::{Mutation, Query};
-use serde_json::json;
 
 use migration::MigratorTrait;
-use sea_orm_rocket::{Connection, Database};
+use sea_orm_rocket::Database;
 
 use rocket_cors::{AllowedOrigins, CorsOptions};
 use std::str::FromStr;

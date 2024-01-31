@@ -5,7 +5,7 @@ use sea_orm::entity::prelude::*;
     Clone, Debug, PartialEq, Eq, DeriveEntityModel, Deserialize, Serialize, FromForm,
 )]
 #[serde(crate = "rocket::serde")]
-#[sea_orm(table_name = "users")]
+#[sea_orm(table_name = "user")]
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,

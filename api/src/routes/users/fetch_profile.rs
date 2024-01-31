@@ -1,9 +1,9 @@
 use sea_orm_rocket::Connection;
 use rocket::serde::json::Json;
 
-use mnger_preon::{Result};
+use mnger_preon::Result;
 
-use mnger_api_service::Query;
+use mnger_api_service::operations::users::user::AbstractUser;
 
 use crate::pool::Db;
 
@@ -15,12 +15,11 @@ pub use entity::user;
 ///
 /// Will fail if you do not have permission to access the other user's profile.
 
-#[openapi]
 #[get("/<target>/profile")]
 pub async fn req(conn: Connection<'_, Db>, target: i32) -> Result<Json<user::Model>> {
     let db = conn.into_inner();
 
-    let user = Query::find_user_by_id(db, target).await?;
+    let user = AbstractUser::fetch_user(db, target).await?;
 
     Ok(Json(user))
 }
