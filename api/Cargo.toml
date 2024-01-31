@@ -52,9 +52,6 @@ nanoid = "0.4.0"
 
 # Spec Generation
 schemars = "0.8.16"
-okapi = { git = "https://github.com/GREsau/okapi.git", branch = "master" }
-rocket_okapi = { git = "https://github.com/GREsau/okapi.git", branch = "master", features = ["swagger"] }
 
 [dependencies.sea-orm-rocket]
 version = "0.5.1"
-features = ["rocket_okapi"]
