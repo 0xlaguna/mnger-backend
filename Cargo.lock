@@ -451,8 +451,8 @@ dependencies = [
  "rand",
  "regex",
  "reqwest",
- "revolt_okapi 0.9.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "revolt_rocket_okapi 0.9.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "revolt_okapi",
+ "revolt_rocket_okapi",
  "rocket",
  "rust-argon2",
  "schemars",
@@ -2332,12 +2332,12 @@ dependencies = [
  "mnger-api-service",
  "mnger-preon",
  "nanoid",
+ "okapi",
  "once_cell",
- "revolt_okapi 0.9.1 (git+https://github.com/0xlaguna/okapi.git?branch=master)",
- "revolt_rocket_okapi 0.9.1 (git+https://github.com/0xlaguna/okapi.git?branch=master)",
  "rocket",
  "rocket_cors",
  "rocket_dyn_templates",
+ "rocket_okapi",
  "schemars",
  "sea-orm-rocket",
  "serde",
@@ -2379,15 +2379,15 @@ dependencies = [
  "futures",
  "iso8601-timestamp",
  "log",
+ "okapi",
  "once_cell",
  "pretty_env_logger",
- "revolt_okapi 0.9.1 (git+https://github.com/0xlaguna/okapi.git?branch=master)",
  "revolt_optional_struct",
- "revolt_rocket_okapi 0.9.1 (git+https://github.com/0xlaguna/okapi.git?branch=master)",
  "rocket",
  "rocket_cors",
  "rocket_empty",
  "rocket_http",
+ "rocket_okapi",
  "schemars",
  "serde",
  "serde_json",
@@ -2624,6 +2624,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a6a622008b6e321afc04970976f62ee297fdbaa6f95318ca343e3eebb9648441"
 dependencies = [
  "memchr",
+]
+
+[[package]]
+name = "okapi"
+version = "0.7.0"
+source = "git+https://github.com/GREsau/okapi.git?branch=master#1608ff7b92e3daca8cf05aa4594e1cf163e584a9"
+dependencies = [
+ "log",
+ "schemars",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -3291,17 +3302,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "revolt_okapi"
-version = "0.9.1"
-source = "git+https://github.com/0xlaguna/okapi.git?branch=master#5a8602bf28e78c49459e7258f18c69eb82e28690"
-dependencies = [
- "log",
- "schemars",
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "revolt_optional_struct"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3319,23 +3319,8 @@ checksum = "275e1e9bd3343f75225cafa64f4bfb939c8b21c5f861141180fc0e24769ff6cf"
 dependencies = [
  "either",
  "log",
- "revolt_okapi 0.9.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "revolt_rocket_okapi_codegen 0.9.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "rocket",
- "schemars",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "revolt_rocket_okapi"
-version = "0.9.1"
-source = "git+https://github.com/0xlaguna/okapi.git?branch=master#5a8602bf28e78c49459e7258f18c69eb82e28690"
-dependencies = [
- "either",
- "log",
- "revolt_okapi 0.9.1 (git+https://github.com/0xlaguna/okapi.git?branch=master)",
- "revolt_rocket_okapi_codegen 0.9.1 (git+https://github.com/0xlaguna/okapi.git?branch=master)",
+ "revolt_okapi",
+ "revolt_rocket_okapi_codegen",
  "rocket",
  "schemars",
  "serde",
@@ -3347,18 +3332,6 @@ name = "revolt_rocket_okapi_codegen"
 version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cc6620569d8ac8f0a1690fcca13f488503807a60e96ebf729749b59aca1dbef9"
-dependencies = [
- "darling",
- "proc-macro2",
- "quote 1.0.35",
- "rocket_http",
- "syn 1.0.109",
-]
-
-[[package]]
-name = "revolt_rocket_okapi_codegen"
-version = "0.9.1"
-source = "git+https://github.com/0xlaguna/okapi.git?branch=master#5a8602bf28e78c49459e7258f18c69eb82e28690"
 dependencies = [
  "darling",
  "proc-macro2",
@@ -3516,8 +3489,8 @@ version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2c0922e47f981204fee38578a8efcf47a5c1a4ac0eb7f59e6bdfa3e61c8e3d69"
 dependencies = [
- "revolt_okapi 0.9.1 (registry+https://github.com/rust-lang/crates.io-index)",
- "revolt_rocket_okapi 0.9.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "revolt_okapi",
+ "revolt_rocket_okapi",
  "rocket",
 ]
 
@@ -3546,6 +3519,32 @@ dependencies = [
  "time",
  "tokio 1.35.1",
  "uncased",
+]
+
+[[package]]
+name = "rocket_okapi"
+version = "0.8.0"
+source = "git+https://github.com/GREsau/okapi.git?branch=master#1608ff7b92e3daca8cf05aa4594e1cf163e584a9"
+dependencies = [
+ "log",
+ "okapi",
+ "rocket",
+ "rocket_okapi_codegen",
+ "schemars",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "rocket_okapi_codegen"
+version = "0.8.0"
+source = "git+https://github.com/GREsau/okapi.git?branch=master#1608ff7b92e3daca8cf05aa4594e1cf163e584a9"
+dependencies = [
+ "darling",
+ "proc-macro2",
+ "quote 1.0.35",
+ "rocket_http",
+ "syn 1.0.109",
 ]
 
 [[package]]

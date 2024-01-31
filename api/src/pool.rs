@@ -1,12 +1,12 @@
 use mnger_api_service::sea_orm;
 
 use async_trait::async_trait;
-use revolt_rocket_okapi::gen::OpenApiGenerator;
+use rocket_okapi::gen::OpenApiGenerator;
 use sea_orm::ConnectOptions;
 use sea_orm_rocket::{rocket::figment::Figment, Config, Database, Connection};
 use std::time::Duration;
 
-use revolt_rocket_okapi::request::{OpenApiFromRequest, RequestHeaderInput};
+use rocket_okapi::request::{OpenApiFromRequest, RequestHeaderInput};
 
 #[derive(Database, Debug)]
 #[database("sea_orm")]
@@ -44,17 +44,16 @@ impl sea_orm_rocket::Pool for SeaOrmPool {
     }
 }
 
+// impl<'r, D: Database> OpenApiFromRequest<'r> for Connection<'r, D> {
+//     fn from_request_input(
+//         _gen: &mut OpenApiGenerator,
+//         _name: String,
+//         _required: bool,
+//     ) -> rocket_okapi::Result<RequestHeaderInput> {
+//         Ok(RequestHeaderInput::None)
+//     }
 
-impl<'r, D: Database> OpenApiFromRequest<'r> for Connection<'r, D> {
-    fn from_request_input(
-        _gen: &mut OpenApiGenerator,
-        _name: String,
-        _required: bool,
-    ) -> revolt_rocket_okapi::Result<RequestHeaderInput> {
-        Ok(RequestHeaderInput::None)
-    }
-
-    fn get_responses(_gen: &mut revolt_rocket_okapi::gen::OpenApiGenerator) -> revolt_rocket_okapi::Result<revolt_okapi::openapi3::Responses> {
-        Ok(revolt_okapi::openapi3::Responses::default())
-    }
-}
+//     fn get_responses(_gen: &mut rocket_okapi::gen::OpenApiGenerator) -> rocket_okapi::Result<rocket_okapi::openapi3::Responses> {
+//         Ok(rocket_okapi::openapi3::Responses::default())
+//     }
+// }

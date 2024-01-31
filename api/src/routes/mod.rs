@@ -1,5 +1,5 @@
 use rocket::{Build, Rocket};
-use revolt_rocket_okapi::{mount_endpoints_and_merged_docs, revolt_okapi::openapi3::OpenApi, settings::OpenApiSettings};
+use rocket_okapi::{mount_endpoints_and_merged_docs, okapi::openapi3::OpenApi, settings::OpenApiSettings};
 
 mod users;
 
@@ -16,7 +16,7 @@ pub fn mount(mut rocket: Rocket<Build>) -> Rocket<Build> {
 
 
 fn custom_openapi_spec() -> OpenApi {
-    use revolt_rocket_okapi::revolt_okapi::openapi3::*;
+    use rocket_okapi::okapi::openapi3::*;
 
     let mut extensions = schemars::Map::new();
     extensions.insert(

@@ -1,5 +1,5 @@
-use revolt_okapi::openapi3::SchemaObject;
-use revolt_rocket_okapi::revolt_okapi::openapi3;
+use okapi::openapi3::SchemaObject;
+use rocket_okapi::okapi::openapi3;
 use rocket::{
     http::{ContentType, Status},
     response::{self, Responder},
@@ -62,27 +62,27 @@ impl<'r> Responder<'r, 'static> for Error {
     }
 }
 
-impl revolt_rocket_okapi::response::OpenApiResponderInner for Error {
+impl rocket_okapi::response::OpenApiResponderInner for Error {
     fn responses(
-        gen: &mut revolt_rocket_okapi::gen::OpenApiGenerator,
-    ) -> std::result::Result<openapi3::Responses, revolt_rocket_okapi::OpenApiError> {
-        let mut content = revolt_okapi::Map::new();
+        gen: &mut rocket_okapi::gen::OpenApiGenerator,
+    ) -> std::result::Result<openapi3::Responses, rocket_okapi::OpenApiError> {
+        let mut content = okapi::Map::new();
 
-        let settings = schemars::gen::SchemaSettings::default().with(|s| {
-            s.option_nullable = true;
-            s.option_add_null_type = false;
-            s.definitions_path = "#/components/schemas/".to_string();
-        });
+        // let settings = schemars::gen::SchemaSettings::default().with(|s| {
+        //     s.option_nullable = true;
+        //     s.option_add_null_type = false;
+        //     s.definitions_path = "#/components/schemas/".to_string();
+        // });
 
-        let mut schema_generator = settings.into_generator();
-        let schema = schema_generator.root_schema_for::<Error>();
+        // let mut schema_generator = settings.into_generator();
+        // let schema = schema_generator.root_schema_for::<Error>();
 
-        let definitions = gen.schema_generator().definitions_mut();
-        for (key, value) in schema.definitions {
-            definitions.insert(key, value);
-        }
+        // let definitions = gen.schema_generator().definitions_mut();
+        // for (key, value) in schema.definitions {
+        //     definitions.insert(key, value);
+        // }
 
-        definitions.insert("Error".to_string(), Schema::Object(schema.schema));
+        // definitions.insert("Error".to_string(), Schema::Object(schema.schema));
 
         content.insert(
             "application/json".to_string(),
