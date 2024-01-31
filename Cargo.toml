@@ -1,11 +1,11 @@
 [package]
-name = "mnger-api"
+name = "mnger-app"
 version = "0.1.0"
+authors = ["Maykol Laguna <lagunamichael2@outlook.com>"]
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[workspace]
+members = [".", "api", "service", "entity", "migration", "preon"]
 
 [dependencies]
-rocket = { version = "=0.5.0-rc.3", features = ["json"] }
-diesel = { version = "2.1.0", features = ["postgres"] }
-dotenvy = "0.15"
+mnger-api = { path = "api" }
