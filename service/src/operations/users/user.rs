@@ -1,25 +1,13 @@
 use ::entity::{user, user::Entity as User};
 use sea_orm::*;
 
-// use crate::{create_error, create_database_error};
-
 use mnger_preon::{Result, Error};
 
 pub struct AbstractUser;
 
 impl AbstractUser {
-    // pub async fn find_user_by_id(db: &DbConn, id: i32) -> Result<user::Model> {
-    //     let user = User::find_by_id(id)
-    //         .one(db)
-    //         .await
-    //         .map_err(|err| create_database_error!(err))?
-    //         .ok_or_else(|| create_error!(NotFound))?;
-
-    //     Ok(user)
-    // }
-
     pub async fn fetch_user(db: &DbConn, id: i32) -> Result<user::Model> {
-        let future = User::find_by_id(id)
+        let user = User::find_by_id(id)
             .one(db)
             .await
             .map_err(|e| Error::DatabaseError { 
@@ -27,9 +15,9 @@ impl AbstractUser {
                 with: "sessions",
                 info: e.to_string()
             })?
-            .ok_or(Error::InvalidSession)?;
+            .ok_or(Error::NotFound)?;
 
-        Ok(future)
+        Ok(user)
     }
     
     /// If ok, returns (user models, num pages).
