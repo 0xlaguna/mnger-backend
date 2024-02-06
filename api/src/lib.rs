@@ -6,18 +6,14 @@ use rocket::{Build, Rocket};
 use rocket_dyn_templates::Template;
 
 use migration::MigratorTrait;
-use sea_orm_rocket::Database;
 
 use rocket_cors::{AllowedOrigins, CorsOptions};
+use sea_orm_rocket::Database;
 use std::str::FromStr;
 
-mod pool;
-use pool::Db;
+use mnger_preon::r#impl::postgres::pool::Db;
 
 pub mod routes;
-
-pub use entity::user;
-pub use entity::user::Entity as User;
 
 // const DEFAULT_USERS_PER_PAGE: u64 = 5;
 
