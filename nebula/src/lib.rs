@@ -5,7 +5,7 @@ use rocket::fairing::{self, AdHoc};
 use rocket::{Build, Rocket};
 use rocket_dyn_templates::Template;
 
-use migration::MigratorTrait;
+use altera::{Migrator, MigratorTrait};
 
 use rocket_cors::{AllowedOrigins, CorsOptions};
 use sea_orm_rocket::Database;
@@ -120,7 +120,7 @@ pub mod routes;
 
 async fn run_migrations(rocket: Rocket<Build>) -> fairing::Result {
     let conn = &Db::fetch(&rocket).unwrap().conn;
-    let _ = migration::Migrator::up(conn, None).await;
+    let _ = Migrator::up(conn, None).await;
     Ok(rocket)
 }
 

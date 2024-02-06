@@ -1,4 +1,5 @@
 use sea_orm_migration::prelude::*;
+use altera::Migrator;
 
 #[async_std::main]
 async fn main() {
@@ -11,5 +12,5 @@ async fn main() {
         std::env::set_var(key, database_url);
     }
 
-    cli::run_cli(migration::Migrator).await;
+    cli::run_cli(Migrator).await;
 }

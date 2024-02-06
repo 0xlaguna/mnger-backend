@@ -1,5 +1,5 @@
 [default]
-template_dir = "api/templates/"
+template_dir = "nebula/templates/"
 
 [default.databases.sea_orm]
 # Mysql

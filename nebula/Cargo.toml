@@ -1,5 +1,5 @@
 [package]
-name = "mnger-api"
+name = "mnger-nebula"
 version = "0.1.0"
 authors = ["Maykol Laguna <lagunamichael2@outlook.com>"]
 edition = "2021"
@@ -28,7 +28,7 @@ tokio = "1.20.0"
 dotenvy = "0.15"
 
 # Migrations
-migration = { path = "../migration" }
+altera = { path = "../altera" }
 # preon
 mnger-preon = { path = "../preon" }
 
