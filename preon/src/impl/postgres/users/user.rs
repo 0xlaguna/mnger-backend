@@ -1,4 +1,4 @@
-use crate::models::{user, user::Entity as User};
+use crate::models::user::{self, Entity as UserEntity, Model as UserModel};
 use sea_orm::*;
 
 use crate::{Result, Error};
@@ -6,8 +6,8 @@ use crate::{Result, Error};
 pub struct AbstractUser;
 
 impl AbstractUser {
-    pub async fn fetch_user(db: &DbConn, id: i32) -> Result<user::Model> {
-        let user = User::find_by_id(id)
+    pub async fn fetch_user(db: &DbConn, id: i32) -> Result<UserModel> {
+        let user = UserEntity::find_by_id(id)
             .one(db)
             .await
             .map_err(|e| Error::DatabaseError { 
@@ -25,9 +25,9 @@ impl AbstractUser {
         db: &DbConn,
         page: u64,
         users_per_page: u64,
-    ) -> Result<(Vec<user::Model>, u64), DbErr> {
+    ) -> Result<(Vec<UserModel>, u64), DbErr> {
         // Setup paginator
-        let paginator = User::find()
+        let paginator = UserEntity::find()
             .order_by_asc(user::Column::Id)
             .paginate(db, users_per_page);
         let num_pages = paginator.num_pages().await?;
