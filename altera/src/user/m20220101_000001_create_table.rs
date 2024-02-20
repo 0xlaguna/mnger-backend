@@ -44,24 +44,30 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(Session::UserId).integer())
                     .to_owned(),
             ).await?;
+        
+        manager
+            .create_foreign_key(
+                ForeignKey::create()
+                    .name("FK_session_user_id")
+                    .from(Session::Table, Session::UserId)
+                    .to(User::Table, User::Id)
+                    .on_delete(ForeignKeyAction::Cascade)
+                    .to_owned()
+            ).await?;
 
         Ok(())
-        
-        // manager
-        //     .create_foreign_key(
-        //         ForeignKey::create()
-        //             .name("FK_session_user_id")
-        //             .from(Session::Table, Session::UserId)
-        //             .to(User::Table, User::Id)
-        //             .on_delete(ForeignKeyAction::Cascade)
-        //             .to_owned()
-        //     ).await
-        
+
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
             .drop_table(Table::drop().table(User::Table).to_owned())
-            .await
+            .await?;
+
+        manager
+            .drop_table(Table::drop().table(Session::Table).to_owned())
+            .await?;
+        
+        Ok(())
     }
 }
