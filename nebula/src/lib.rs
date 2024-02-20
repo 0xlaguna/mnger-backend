@@ -1,11 +1,7 @@
 #[macro_use]
 extern crate rocket;
 
-use rocket::fairing::{self, AdHoc};
-use rocket::{Build, Rocket};
 use rocket_dyn_templates::Template;
-
-use altera::{Migrator, MigratorTrait};
 
 use rocket_cors::{AllowedOrigins, CorsOptions};
 use sea_orm_rocket::Database;
@@ -118,12 +114,6 @@ pub mod routes;
 //     Ok(())
 // }
 
-async fn run_migrations(rocket: Rocket<Build>) -> fairing::Result {
-    let conn = &Db::fetch(&rocket).unwrap().conn;
-    let _ = Migrator::up(conn, None).await;
-    Ok(rocket)
-}
-
 #[tokio::main]
 async fn start() -> Result<(), rocket::Error> {
     let rocket = rocket::build();
@@ -144,7 +134,6 @@ async fn start() -> Result<(), rocket::Error> {
 
     routes::mount(rocket)
         .attach(Db::init())
-        .attach(AdHoc::try_on_ignite("Migrations", run_migrations))
         .attach(Template::fairing())
         .manage(cors.clone())
         .launch()
