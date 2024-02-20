@@ -3,11 +3,10 @@ use rocket::serde::json::Json;
 
 use mnger_preon::Result;
 
-use mnger_api_service::operations::users::user::AbstractUser;
+use mnger_preon::r#impl::postgres::users::user::AbstractUser;
+use mnger_preon::models::user;
 
-use crate::pool::Db;
-
-pub use entity::user;
+use mnger_preon::r#impl::postgres::pool::Db;
 
 /// # Fetch User Profile
 ///

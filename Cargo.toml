@@ -5,7 +5,7 @@ authors = ["Maykol Laguna <lagunamichael2@outlook.com>"]
 edition = "2021"
 
 [workspace]
-members = [".", "api", "service", "entity", "migration", "preon"]
+members = [".", "nebula", "altera", "preon"]
 
 [dependencies]
-mnger-api = { path = "api" }
+mnger-nebula = { path = "nebula" }

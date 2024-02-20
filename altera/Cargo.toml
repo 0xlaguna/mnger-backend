@@ -1,11 +1,11 @@
 [package]
-name = "migration"
+name = "altera"
 version = "0.1.0"
 edition = "2021"
 publish = false
 
 [lib]
-name = "migration"
+name = "altera"
 path = "src/lib.rs"
 
 [dependencies]

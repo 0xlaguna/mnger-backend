@@ -1,2 +1,9 @@
 [phases.setup]
 aptPkgs = ["...", "clang", "lld"]
+
+[phases.build]
+cmds = ["...", "cargo install sea-orm-cli"]
+
+[phases.release]
+cmds = ["sea-orm-cli migrate -d ./altera"]
+dependsOn = ["build"]

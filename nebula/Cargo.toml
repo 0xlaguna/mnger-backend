@@ -1,5 +1,5 @@
 [package]
-name = "mnger-api"
+name = "mnger-nebula"
 version = "0.1.0"
 authors = ["Maykol Laguna <lagunamichael2@outlook.com>"]
 edition = "2021"
@@ -27,13 +27,9 @@ validator = { version = "0.16.1", features = ["derive"] }
 tokio = "1.20.0"
 dotenvy = "0.15"
 
-# Entity
-entity = { path = "../entity" }
 # Migrations
-migration = { path = "../migration" }
-# Service
-mnger-api-service = { path = "../service" }
-# quark
+altera = { path = "../altera" }
+# preon
 mnger-preon = { path = "../preon" }
 
 # Utility

@@ -1,5 +1,3 @@
-use mnger_api_service::sea_orm;
-
 use async_trait::async_trait;
 use sea_orm::ConnectOptions;
 use sea_orm_rocket::{rocket::figment::Figment, Config, Database};

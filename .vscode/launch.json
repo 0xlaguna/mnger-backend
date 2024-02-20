@@ -44,16 +44,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in library 'mnger-api'",
+            "name": "Debug unit tests in library 'mnger-nebula'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
                     "--lib",
-                    "--package=mnger-api"
+                    "--package=mnger-nebula"
                 ],
                 "filter": {
-                    "name": "mnger-api",
+                    "name": "mnger-nebula",
                     "kind": "lib"
                 }
             },
@@ -63,16 +63,16 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in library 'entity'",
+            "name": "Debug unit tests in library 'altera'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
                     "--lib",
-                    "--package=entity"
+                    "--package=altera"
                 ],
                 "filter": {
-                    "name": "entity",
+                    "name": "altera",
                     "kind": "lib"
                 }
             },
@@ -82,34 +82,15 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in library 'migration'",
-            "cargo": {
-                "args": [
-                    "test",
-                    "--no-run",
-                    "--lib",
-                    "--package=migration"
-                ],
-                "filter": {
-                    "name": "migration",
-                    "kind": "lib"
-                }
-            },
-            "args": [],
-            "cwd": "${workspaceFolder}"
-        },
-        {
-            "type": "lldb",
-            "request": "launch",
-            "name": "Debug executable 'migration'",
+            "name": "Debug executable 'altera'",
             "cargo": {
                 "args": [
                     "build",
-                    "--bin=migration",
-                    "--package=migration"
+                    "--bin=altera",
+                    "--package=altera"
                 ],
                 "filter": {
-                    "name": "migration",
+                    "name": "altera",
                     "kind": "bin"
                 }
             },
@@ -119,36 +100,17 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug unit tests in executable 'migration'",
+            "name": "Debug unit tests in executable 'altera'",
             "cargo": {
                 "args": [
                     "test",
                     "--no-run",
-                    "--bin=migration",
-                    "--package=migration"
+                    "--bin=altera",
+                    "--package=altera"
                 ],
                 "filter": {
-                    "name": "migration",
+                    "name": "altera",
                     "kind": "bin"
-                }
-            },
-            "args": [],
-            "cwd": "${workspaceFolder}"
-        },
-        {
-            "type": "lldb",
-            "request": "launch",
-            "name": "Debug unit tests in library 'mnger-api-service'",
-            "cargo": {
-                "args": [
-                    "test",
-                    "--no-run",
-                    "--lib",
-                    "--package=mnger-api-service"
-                ],
-                "filter": {
-                    "name": "mnger-api-service",
-                    "kind": "lib"
                 }
             },
             "args": [],

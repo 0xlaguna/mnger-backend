@@ -1,3 +1,3 @@
 fn main() {
-    mnger_api::main();
+    mnger_nebula::main();
 }
