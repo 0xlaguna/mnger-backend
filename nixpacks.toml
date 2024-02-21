@@ -1,5 +1,6 @@
 [phases.setup]
 aptPkgs = ["...", "clang", "lld"]
+nixPkgs = ['...', 'sea-orm-cli']
 
 [phases.release]
 cmds = ["sea-orm-cli migrate -d ./altera"]
