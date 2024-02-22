@@ -11,10 +11,19 @@ pub struct Model {
     pub id: i32,
 
     /// Username
-    pub username: String,
+    pub username: Option<String>,
     
     /// Email
     pub email: String,
+
+    /// First name
+    pub first_name: String,
+
+    /// Middle name
+    pub middle_name: String,
+
+    /// Last Name
+    pub last_name: String,
     
     /// Argon2 hashed password
     pub password: String,

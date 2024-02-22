@@ -1,7 +1,12 @@
-use crate::models::user::{self, Entity as UserEntity, Model as UserModel};
+use crate::models::user::{
+    self, 
+    Entity as UserEntity, 
+    Model as UserModel,
+    ActiveModel as UserActiveModel
+};
 use sea_orm::*;
 
-use crate::{Result, Error};
+use crate::{Result, Error, auth::util::hash_password};
 
 pub struct AbstractUser;
 
@@ -20,21 +25,72 @@ impl AbstractUser {
         Ok(user)
     }
 
-    /// If ok, returns (user models, num pages).
+    /// Create a new user
+    pub async fn create_user(
+        db: &DbConn,
+        email: String,
+        password: String,
+        first_name: String,
+        middle_name: String,
+        last_name: String
+    ) -> Result<UserModel> {
+
+        let password = hash_password(password)?;
+
+        let user = UserActiveModel {
+            id: NotSet,
+            username: NotSet,
+            email: Set(email),
+            password: Set(password),
+            first_name: Set(first_name),
+            middle_name: Set(middle_name),
+            last_name: Set(last_name),
+            disabled: Set(false)
+        };
+
+        let user = user
+            .insert(db)
+            .await
+            .map_err(|e| Error::DatabaseError { 
+                operation: "create_user", 
+                with: "sessions",
+                info: e.to_string()
+            })?;
+
+        Ok(user)
+    }
+
     pub async fn find_users_in_page(
         db: &DbConn,
         page: u64,
         users_per_page: u64,
-    ) -> Result<(Vec<UserModel>, u64), DbErr> {
+    ) -> Result<(Vec<UserModel>, u64)> {
         // Setup paginator
         let paginator = UserEntity::find()
             .order_by_asc(user::Column::Id)
             .paginate(db, users_per_page);
-        let num_pages = paginator.num_pages().await?;
 
-        // Fetch paginated users
-        paginator.fetch_page(page - 1).await.map(|p| (p, num_pages))
+        let num_pages = paginator
+            .num_pages()
+            .await
+            .map_err(|e| Error::DatabaseError { 
+                operation: "find_users_num_pages", 
+                with: "sessions",
+                info: e.to_string()
+            })?;
+
+        let users = paginator
+            .fetch_page(page - 1)
+            .await
+            .map_err(|e| Error::DatabaseError { 
+                operation: "find_users_in_page", 
+                with: "sessions",
+                info: e.to_string()
+            })?;
+        
+        Ok((users, num_pages))
     }
+
 }
 
 // use ::entity::{user, user::Entity as User};
