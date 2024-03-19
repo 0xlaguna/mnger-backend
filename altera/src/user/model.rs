@@ -6,6 +6,9 @@ pub enum User {
     Id,
     Username,
     Email,
+    FirstName,
+    MiddleName,
+    LastName,
     Password,
     Disabled
 }
