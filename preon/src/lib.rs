@@ -16,6 +16,8 @@ pub mod models;
 
 pub mod auth;
 
+pub mod derive;
+
 pub use util::{
     result::{Error, Result},
     variables,

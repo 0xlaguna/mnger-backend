@@ -4,8 +4,7 @@ use crate::models::user::{
     Model as UserModel,
 };
 use crate::models::session::{
-    Model as SessionModel,
-    ActiveModel as SessionActiveModel
+    self, ActiveModel as SessionActiveModel, Entity as SessonEntity, Model as SessionModel
 };
 use sea_orm::*;
 use nanoid::nanoid;
@@ -32,6 +31,23 @@ impl AbstractAccount {
                 with: "sessions",
                 info: e.to_string()
             })?;
+        
+        Ok(session)
+    }
+
+    /// Find session by token
+    pub async fn find_session_by_token(db: &DbConn, token: String) -> Result<SessionModel> {
+        let session = SessonEntity
+            ::find()
+            .filter(session::Column::Token.eq(token))
+            .one(db)
+            .await
+            .map_err(|e| Error::DatabaseError { 
+                operation: "find_one", 
+                with: "sessions",
+                info: e.to_string()
+            })?
+            .ok_or(Error::NotFound)?;
         
         Ok(session)
     }
