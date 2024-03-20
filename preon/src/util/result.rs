@@ -30,6 +30,8 @@ pub enum Error {
         #[serde(skip_serializing, skip_deserializing)]
         error: ValidationErrors,
     },
+
+    MissingHeaders,
 }
 
 /// Result type with custom Error
@@ -48,6 +50,7 @@ impl<'r> Responder<'r, 'static> for Error {
             Error::NotFound => Status::NotFound,
             Error::InvalidSession => Status::Unauthorized,
             Error::FailedValidation { .. } => Status::BadRequest,
+            Error::MissingHeaders => Status::Unauthorized,
         };
 
         // Serialize the error data structure into JSON.
