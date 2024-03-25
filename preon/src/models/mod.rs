@@ -4,6 +4,15 @@ mod users {
 }
 
 pub use users::*;
-
 pub use user::Model as User;
 pub use session::Model as Session;
+
+mod authorization {
+    pub mod role;
+    pub mod permission;
+    pub mod role_permission;
+    pub mod module;
+    pub mod role_module;
+}
+
+pub use authorization::*;
