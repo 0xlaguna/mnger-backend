@@ -3,14 +3,6 @@ name = "mnger-preon"
 version = "0.1.0"
 edition = "2021"
 
-# [features]
-# rocket_impl = [
-#     "rocket_empty",
-#     "rocket_cors",
-
-#     "authifier/rocket_impl",
-# ]
-
 [dependencies]
 # Web
 rocket_http = { optional = true, version = "0.5.0" }
