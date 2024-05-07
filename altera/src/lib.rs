@@ -2,6 +2,7 @@ pub use sea_orm_migration::prelude::*;
 
 mod user;
 mod authorization;
+mod workorder;
 
 pub struct Migrator;
 
