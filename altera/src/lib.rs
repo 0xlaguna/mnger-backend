@@ -12,6 +12,7 @@ impl MigratorTrait for Migrator {
         vec![
             Box::new(user::m20220101_000001_create_table::Migration),
             Box::new(authorization::m20240321_001343_rbac_initial::Migration),
+            Box::new(workorder::m20240325_143045_workorder::Migration),
         ]
     }
 }

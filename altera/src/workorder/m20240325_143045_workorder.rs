@@ -15,17 +15,24 @@ impl MigrationTrait for Migration {
                     .table(WorkOrder::Table)
                     .if_not_exists()
                     .col(
-                        ColumnDef::new(WorkOrder::Ulid)
+                        ColumnDef::new(WorkOrder::Id)
                             .string()
-                            .not_null()
+                            .extra("DEFAULT generate_ulid()")
                             .primary_key()
+                            .not_null()
                     )
                     .col(ColumnDef::new(WorkOrder::Title).string().not_null())
                     .col(ColumnDef::new(WorkOrder::Description).string())
                     .col(ColumnDef::new(WorkOrder::Status).small_integer().not_null())
-                    .col(ColumnDef::new(WorkOrder::StartDate).date_time().not_null())
-                    .col(ColumnDef::new(WorkOrder::EndDate).date_time())
+                    .col(ColumnDef::new(WorkOrder::StartDate).timestamp_with_time_zone().not_null())
+                    .col(ColumnDef::new(WorkOrder::EndDate).timestamp_with_time_zone())
                     .col(ColumnDef::new(WorkOrder::CreatedBy).integer().not_null())
+                    .col(
+                        ColumnDef::new(WorkOrder::CreatedAt)
+                            .timestamp_with_time_zone()
+                            .extra("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
+                    )
+                    .col(ColumnDef::new(WorkOrder::UpdatedAt).timestamp_with_time_zone())
                     .to_owned()
             ).await?;
 
