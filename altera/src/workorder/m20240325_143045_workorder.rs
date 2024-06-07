@@ -30,7 +30,8 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(WorkOrder::CreatedAt)
                             .timestamp_with_time_zone()
-                            .extra("CURRENT_TIMESTAMP AT TIME ZONE 'UTC'")
+                            .extra("DEFAULT now()")
+                            .not_null()
                     )
                     .col(ColumnDef::new(WorkOrder::UpdatedAt).timestamp_with_time_zone())
                     .to_owned()
