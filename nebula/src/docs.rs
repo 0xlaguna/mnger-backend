@@ -7,15 +7,19 @@ use crate::routes::account::login;
 use crate::routes::users::create_user;
 use crate::routes::users::create_user::DataCreateAccount;
 
+use crate::routes::users::fetch_profile;
+use crate::routes::users::fetch_profile::FetchProfileResponse;
+
 #[derive(OpenApi)]
 #[openapi(
     paths(
         login::req,
         create_user::req,
+        fetch_profile::req
     ),
     components(
         schemas(DataLoginAccount, LoginResponse),
-        schemas(DataCreateAccount)
+        schemas(DataCreateAccount, FetchProfileResponse)
     ),
     tags(
         (name = "Mnger", description = "Mnger endpoints.")
