@@ -1,25 +1,23 @@
 use utoipa::openapi::security::{ApiKey, ApiKeyValue, SecurityScheme};
 use utoipa::{Modify, OpenApi};
 
-use crate::routes::account::login::{DataLoginAccount, LoginResponse};
-use crate::routes::account::login;
-
-use crate::routes::users::create_user;
-use crate::routes::users::create_user::DataCreateAccount;
-
-use crate::routes::users::fetch_profile;
-use crate::routes::users::fetch_profile::FetchProfileResponse;
+use crate::routes::account::login::{DataLoginAccount, LoginResponse, self};
+use crate::routes::users::create_user::{DataCreateAccount, self};
+use crate::routes::users::fetch_profile::{FetchProfileResponse, self};
+use crate::routes::workorder::create_workorder::{DataCreateWorkOrder, self};
 
 #[derive(OpenApi)]
 #[openapi(
     paths(
         login::req,
         create_user::req,
-        fetch_profile::req
+        fetch_profile::req,
+        create_workorder::req
     ),
     components(
         schemas(DataLoginAccount, LoginResponse),
-        schemas(DataCreateAccount, FetchProfileResponse)
+        schemas(DataCreateAccount, FetchProfileResponse),
+        schemas(DataCreateWorkOrder)
     ),
     tags(
         (name = "Mnger", description = "Mnger endpoints.")

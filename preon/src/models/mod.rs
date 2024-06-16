@@ -14,5 +14,9 @@ mod authorization {
     pub mod module;
     pub mod role_module;
 }
-
 pub use authorization::*;
+
+mod workorders {
+    pub mod workorder;
+}
+pub use workorders::*;
