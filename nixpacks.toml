@@ -1,6 +1,6 @@
 [phases.setup]
-aptPkgs = ["...", "clang", "lld"]
-nixPkgs = ['...', 'sea-orm-cli']
+aptPkgs = ["...", "clang", "lld", "libc6"]
+nixPkgs = ["...", "sea-orm-cli", "openssl"]
 nixLibs = []
 
 [phases.release]
