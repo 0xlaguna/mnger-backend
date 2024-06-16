@@ -49,7 +49,7 @@ nanoid = "0.4.0"
 # Spec Generation
 schemars = "0.8.16"
 utoipa = { version = "4.2.3", features = ["rocket_extras"] }
-utoipa-swagger-ui = { version = "7.1.0", features = ["rocket"] }
+utoipa-swagger-ui = { version = "7.1.0", features = ["rocket", "vendored"] }
 utoipa-redoc = { version = "4.0.0", features = ["rocket"] }
 utoipa-rapidoc = { version = "4.0.0", features = ["rocket"] }
 utoipa-scalar = { version = "0.1.0", features = ["rocket"] }
