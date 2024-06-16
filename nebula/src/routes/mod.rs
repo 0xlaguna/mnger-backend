@@ -1,8 +1,8 @@
 use rocket::{Build, Rocket};
 
-mod index;
-mod users;
-mod account;
+pub mod index;
+pub mod users;
+pub mod account;
 
 pub fn mount(rocket: Rocket<Build>) -> Rocket<Build> {
     rocket

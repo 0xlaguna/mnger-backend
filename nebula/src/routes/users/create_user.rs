@@ -1,14 +1,14 @@
 use rocket::response::status;
 use sea_orm_rocket::Connection;
 use rocket::serde::{Serialize, Deserialize, json::Json};
+use utoipa::ToSchema;
 
 use mnger_preon::Result;
-
 use mnger_preon::r#impl::postgres::users::user::AbstractUser;
 use mnger_preon::r#impl::postgres::pool::Db;
 
 /// # Account Data
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, ToSchema)]
 pub struct DataCreateAccount {
     /// Valid email address
     pub email: String,
@@ -19,16 +19,21 @@ pub struct DataCreateAccount {
     /// First Name
     pub first_name: String,
 
-    /// Middle
+    /// Middle Name
     pub middle_name: String,
 
     // Last Name
     pub last_name: String,
 }
 
-/// # Create user account
-///
-///
+/// Create user account
+#[utoipa::path(
+    context_path = "/users",
+    request_body = DataCreateAccount,
+    responses(
+        (status = 201, description = "Account created successfully"),
+    ),
+)]
 #[post("/create", data = "<data>")]
 pub async fn req(conn: Connection<'_, Db>, data: Json<DataCreateAccount>) -> Result<status::NoContent> {
 
