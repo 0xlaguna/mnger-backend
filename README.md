@@ -10,3 +10,11 @@
 
 ## Setting up local development
 We only need docker, vscode and the [DevContainers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension
+
+## API Documentation
+Our project uses multiple documentation tools to ensure comprehensive API documentation:
+
+- **Scalar Docs**: [/scalar]()
+- **ReDoc**: [/redoc]()
+- **Swagger UI**: [/swagger-ui]()
+- **Rapidoc**: [/rapidoc]()
