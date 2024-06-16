@@ -4,19 +4,24 @@ use utoipa::{Modify, OpenApi};
 use crate::routes::account::login::{DataLoginAccount, LoginResponse};
 use crate::routes::account::login;
 
+use crate::routes::users::create_user;
+use crate::routes::users::create_user::DataCreateAccount;
+
 #[derive(OpenApi)]
 #[openapi(
     paths(
         login::req,
+        create_user::req,
     ),
     components(
-        schemas(DataLoginAccount, LoginResponse)
+        schemas(DataLoginAccount, LoginResponse),
+        schemas(DataCreateAccount)
     ),
     tags(
         (name = "Mnger", description = "Mnger endpoints.")
     ),
     modifiers(&SecurityAddon)
-)] 
+)]
 pub struct ApiDoc;
 
 struct SecurityAddon;

@@ -1,7 +1,7 @@
 use rocket::Route;
 
-mod fetch_profile;
-mod create_user;
+pub mod fetch_profile;
+pub mod create_user;
 
 pub fn user_routes() -> Vec<Route> {
     routes![
