@@ -37,11 +37,19 @@ pub struct Model {
 pub enum Relation {
     #[sea_orm(has_many = "super::session::Entity")]
     Session,
+
+    #[sea_orm(has_many = "crate::models::workorder::Entity")]
+    WorkOrder,
 }
 
 impl Related<super::session::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::Session.def()
+    }
+}
+impl Related<crate::models::workorder::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::WorkOrder.def()
     }
 }
 
