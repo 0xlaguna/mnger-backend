@@ -5,10 +5,10 @@ use sea_orm::entity::prelude::*;
     Clone, Debug, PartialEq, Eq, DeriveEntityModel, Deserialize, Serialize
 )]
 #[serde(crate = "rocket::serde")]
-#[sea_orm(table_name = "workorder")]
+#[sea_orm(table_name = "work_order")]
 pub struct Model {
     #[sea_orm(primary_key)]
-    id: String,
+    pub id: String,
 
     /// Title
     pub title: String,
@@ -17,13 +17,13 @@ pub struct Model {
     pub description: String,
 
     /// Status
-    pub status: i8,
+    pub status: i16,
 
     /// Start Date
-    pub start_date: TimeDateTimeWithTimeZone,
+    pub start_date: DateTimeWithTimeZone,
 
     /// End Date
-    pub end_date: TimeDateTimeWithTimeZone,
+    pub end_date: Option<DateTimeWithTimeZone>,
 
     /// Created By
     pub created_by: i32

@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate schemars;
-#[macro_use]
-extern crate rocket;
+// #[macro_use]
+// extern crate rocket;
 #[macro_use]
 extern crate lazy_static;
 
