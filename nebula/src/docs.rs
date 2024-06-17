@@ -5,6 +5,7 @@ use crate::routes::account::login::{DataLoginAccount, LoginResponse, self};
 use crate::routes::users::create_user::{DataCreateAccount, self};
 use crate::routes::users::fetch_profile::{FetchProfileResponse, self};
 use crate::routes::workorder::create_workorder::{DataCreateWorkOrder, self};
+use crate::routes::workorder::list_workorders::{WorkOrderItem, WorkOrderListData, self};
 
 #[derive(OpenApi)]
 #[openapi(
@@ -12,12 +13,14 @@ use crate::routes::workorder::create_workorder::{DataCreateWorkOrder, self};
         login::req,
         create_user::req,
         fetch_profile::req,
-        create_workorder::req
+        create_workorder::req,
+        list_workorders::req
     ),
     components(
         schemas(DataLoginAccount, LoginResponse),
         schemas(DataCreateAccount, FetchProfileResponse),
-        schemas(DataCreateWorkOrder)
+        schemas(DataCreateWorkOrder),
+        schemas(WorkOrderItem, WorkOrderListData),
     ),
     tags(
         (name = "Mnger", description = "Mnger endpoints.")
