@@ -29,7 +29,8 @@ impl AbstractWorkOrder {
             status: Set(1),
             start_date: Set(start_date),
             end_date: Set(end_date),
-            created_by: Set(created_by)
+            created_by: Set(created_by),
+            created_at: NotSet
         };
         
         let workorder = workorder
@@ -41,6 +42,21 @@ impl AbstractWorkOrder {
                 info: e.to_string()
             })?;
         
+        Ok(workorder)
+    }
+
+    /// Find Work Order
+    pub async fn fetch_work_order(db: &DbConn, id: String) -> Result<WorkOrderModel> {
+        let workorder = WorkOrderEntity::find_by_id(id)
+            .one(db)
+            .await
+            .map_err(|e| Error::DatabaseError { 
+                operation: "find_one", 
+                with: "sessions",
+                info: e.to_string()
+            })?
+            .ok_or(Error::NotFound)?;
+
         Ok(workorder)
     }
     

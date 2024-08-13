@@ -37,6 +37,9 @@ pub struct WorkOrderItem {
 
     /// End Date
     pub end_date: Option<DateTimeWithTimeZone>,
+
+    /// Created At
+    pub created_at: Option<DateTimeWithTimeZone>,
 }
 
 impl From<workorder::Model> for WorkOrderItem {
@@ -46,7 +49,8 @@ impl From<workorder::Model> for WorkOrderItem {
             title: model.title,
             description: model.description,
             start_date: model.start_date,
-            end_date: model.end_date
+            end_date: model.end_date,
+            created_at: model.created_at
         }
     }
 }

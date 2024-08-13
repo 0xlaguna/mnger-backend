@@ -25,6 +25,8 @@ pub struct Model {
     /// End Date
     pub end_date: Option<DateTimeWithTimeZone>,
 
+    pub created_at: Option<DateTimeWithTimeZone>,
+
     /// Created By
     pub created_by: i32
 }
