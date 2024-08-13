@@ -15,10 +15,10 @@ pub struct AbstractAccount;
 
 impl AbstractAccount {
     /// Create a new user Session
-    pub async fn create_session(db: &DbConn, name: String, user_id: i32) -> Result<SessionModel> {
+    pub async fn create_session(db: &DbConn, name: &str, user_id: i32) -> Result<SessionModel> {
         let session = SessionActiveModel {
             id: NotSet,
-            name: Set(name),
+            name: Set(name.to_string()),
             token: Set(nanoid!(64)),
             user_id: Set(user_id)
         };
@@ -52,7 +52,7 @@ impl AbstractAccount {
         Ok(session)
     }
 
-    pub async fn find_by_email(db: &DbConn, email: String) -> Result<UserModel> {
+    pub async fn find_by_email(db: &DbConn, email: &str) -> Result<UserModel> {
         let account = UserEntity
             ::find()
             .filter(user::Column::Email.eq(email))
@@ -69,7 +69,7 @@ impl AbstractAccount {
     }
 
     /// Login account
-    pub async fn login(db: &DbConn, email: String, password: String, name: Option<String>) -> Result<SessionModel> {
+    pub async fn login(db: &DbConn, email: &str, password: &str, name: Option<&str>) -> Result<SessionModel> {
         let account = AbstractAccount::find_by_email(db, email).await?;
         
         let is_valid_password = argon2::verify_encoded(&account.password, password.as_bytes())
@@ -79,7 +79,7 @@ impl AbstractAccount {
             return Err(Error::InvalidCredentials);
         }
 
-        let name = name.unwrap_or_else(|| "Unknown".to_string());
+        let name = name.unwrap_or("Unknown");
 
         let session = AbstractAccount
             ::create_session(db, name, account.id).await?;

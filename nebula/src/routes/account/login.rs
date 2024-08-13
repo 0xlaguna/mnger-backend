@@ -64,9 +64,9 @@ pub async fn req(conn: Connection<'_, Db>, data: Json<DataLoginAccount>) -> Resu
     let session = AbstractAccount
         ::login(
             db, 
-            data.email, 
-            data.password, 
-            data.name
+            &data.email, 
+            &data.password, 
+            data.name.as_deref()
         ).await?;
 
     let response: LoginResponse = session.into();
