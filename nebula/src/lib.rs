@@ -1,6 +1,6 @@
 #[macro_use]
 extern crate rocket;
-
+use dotenvy::dotenv;
 use rocket_dyn_templates::Template;
 
 use sea_orm_rocket::Database;
@@ -23,6 +23,8 @@ fn all_options() { }
 
 #[tokio::main]
 async fn start()  -> Result<(), rocket::Error> {
+    dotenv().ok();
+    
     let rocket = rocket::build()
         .attach(Db::init())
         .attach(Template::fairing())

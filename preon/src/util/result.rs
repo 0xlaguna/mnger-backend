@@ -4,7 +4,6 @@ use rocket::{
     Request, Response,
 };
 use serde::{Deserialize, Serialize};
-use validator::ValidationErrors;
 
 use std::io::Cursor;
 
@@ -14,6 +13,7 @@ use std::io::Cursor;
 pub enum Error {
     // Permissions
     NotOwner,
+    NotPrivileged,
 
     // General errors
     DatabaseError {
@@ -21,14 +21,15 @@ pub enum Error {
         with: &'static str,
         info: String,
     },
-    InternalError,
+    InternalError {
+        info: String,
+    },
     InvalidOperation,
     InvalidCredentials,
     NotFound,
     InvalidSession,
     FailedValidation {
-        #[serde(skip_serializing, skip_deserializing)]
-        error: ValidationErrors,
+        info: String
     },
 
     MissingHeaders,
@@ -42,9 +43,10 @@ impl<'r> Responder<'r, 'static> for Error {
     fn respond_to(self, _: &'r Request<'_>) -> response::Result<'static> {
         let status = match self {
             Error::NotOwner => Status::Forbidden,
+            Error::NotPrivileged => Status::Unauthorized,
 
             Error::DatabaseError { .. } => Status::InternalServerError,
-            Error::InternalError => Status::InternalServerError,
+            Error::InternalError { .. } => Status::InternalServerError,
             Error::InvalidOperation => Status::BadRequest,
             Error::InvalidCredentials => Status::Unauthorized,
             Error::NotFound => Status::NotFound,

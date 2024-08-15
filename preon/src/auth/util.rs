@@ -29,5 +29,5 @@ pub fn hash_password(plaintext_password: String) -> Result<String> {
         nanoid::nanoid!(24).as_bytes(),
         &ARGON_CONFIG,
     )
-    .map_err(|_| Error::InternalError)
+    .map_err(|e| Error::InternalError { info: e.to_string()})
 }
