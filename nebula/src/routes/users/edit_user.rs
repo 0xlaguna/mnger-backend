@@ -8,7 +8,6 @@ use memchr::memchr;
 use mnger_preon::{Error, Result};
 use mnger_preon::models::Session as Session;
 use mnger_preon::r#impl::postgres::pool::Db;
-use validator::Validate;
 
 
 /// # Edit User Data
