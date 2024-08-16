@@ -1,10 +1,12 @@
-use crate::models::user::{
-    self, 
-    Entity as UserEntity, 
-    Model as UserModel,
-    ActiveModel as UserActiveModel
-};
+use std::{io::Write, path};
+
+use crate::{dto::users::DataEditUser, r#impl::storage::s3::{Opt, S3}, models::user::{
+    self, ActiveModel as UserActiveModel, Entity as UserEntity, Model as UserModel
+}};
 use sea_orm::*;
+
+use ulid::Ulid;
+use tempfile::NamedTempFile;
 
 use crate::{Result, Error, auth::util::hash_password};
 
@@ -58,6 +60,33 @@ impl AbstractUser {
             })?;
 
         Ok(user)
+    }
+
+    pub async fn update_user(
+        db: &DbConn,
+        user_id: i32,
+        data: DataEditUser<'_>
+    ) -> Result<()> {
+        
+        // Update use file avatar
+        let mut temp_file = NamedTempFile::new()
+            .map_err(|e| Error::InternalError { info: e.to_string()})?;
+
+        let _ = temp_file.write_all(data.avatar.data);
+        let temp_file_path = temp_file.path();
+
+        let mut buf = [0; ulid::ULID_LEN];
+        let filename = Ulid::new().array_to_str(&mut buf);
+
+        let file_key = format!(
+            "user-images/{}.{}", 
+            filename, 
+            data.avatar.extension
+        );
+
+        S3::put_object(&Opt { key: file_key, source: temp_file_path.to_path_buf() }).await?;
+
+        Ok(())
     }
 
     pub async fn find_users_in_page(

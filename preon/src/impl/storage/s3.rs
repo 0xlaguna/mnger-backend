@@ -14,17 +14,17 @@ pub struct S3;
 #[derive(Debug, Parser)]
 pub struct Opt {
     #[structopt(long)]
-    bucket: String,
+    pub key: String,
     #[structopt(long)]
-    object: String,
-    #[structopt(long)]
-    source: PathBuf,
+    pub source: PathBuf,
 }
 
 impl S3 {
     pub async fn put_object(opts: &Opt) -> Result<()> {
         let config = aws_config::from_env().region(Region::new("us-east-1")).load().await;
         let client = Client::new(&config);
+        let bucket = std::env::var("AWS_BUCKET")
+            .map_err(|e| Error::InternalError { info: e.to_string()})?;
 
         let body = ByteStream::read_from()
             .path(opts.source.clone())
@@ -37,9 +37,14 @@ impl S3 {
 
         let _request = client
             .put_object()
-            .bucket(opts.bucket.clone())
-            .key(opts.object.clone())
-            .body(body);
+            .bucket(bucket)
+            .key(opts.key.clone())
+            .body(body)
+            .send()
+            .await
+            .map_err(|e|Error::InternalError {
+                info: e.to_string()
+            })?;
 
         Ok(())
     }
