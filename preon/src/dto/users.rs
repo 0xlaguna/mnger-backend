@@ -1,8 +1,129 @@
 use rocket::http::ContentType;
 use rocket::data::ToByteUnit;
+use rocket::serde::{Serialize, Deserialize};
 use rocket::form::{self, FromForm, DataField, FromFormField};
 use utoipa::ToSchema;
 
+use crate::models::{user, Session};
+
+
+/// # Login Account Data
+#[derive(Serialize, Deserialize, ToSchema)]
+pub struct DataLoginAccount {
+    /// Valid email address
+    pub email: String,
+
+    /// Password
+    pub password: String,
+
+    /// Session name
+    pub name: Option<String>,
+
+}
+
+/// # Login-Response Account Data
+#[derive(Serialize, Deserialize, ToSchema)]
+pub struct LoginResponse {
+    pub token: String,
+
+    pub name: String,
+
+    pub user_id: i32,
+}
+
+impl From<Session> for LoginResponse {
+    fn from(session: Session) -> Self {
+        LoginResponse {
+            token: session.token,
+            name: session.name,
+            user_id: session.user_id,
+        }
+    }
+}
+
+/// # Account Data
+#[derive(Serialize, Deserialize, ToSchema)]
+pub struct DataCreateAccount {
+    /// Valid email address
+    pub email: String,
+
+    /// Password
+    pub password: String,
+
+    /// First Name
+    pub first_name: String,
+
+    /// Middle Name
+    pub middle_name: String,
+
+    // Last Name
+    pub last_name: String,
+}
+
+#[derive(Serialize, Deserialize, ToSchema)]
+pub struct FetchProfileResponse {
+    /// User identifier
+    pub id: i32,
+
+    /// Username
+    pub username: Option<String>,
+
+    /// Email
+    pub email: String,
+
+    /// First Name
+    pub first_name: String,
+
+    /// Middle Name
+    pub middle_name: String,
+
+    /// Last Name
+    pub last_name: String,
+}
+
+impl From<user::Model> for FetchProfileResponse {
+    fn from(user: user::Model) -> Self {
+        FetchProfileResponse {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            first_name: user.first_name,
+            middle_name: user.middle_name,
+            last_name: user.last_name
+        }
+    }
+}
+
+
+/// User getme data
+#[derive(Serialize, Deserialize, ToSchema)]
+pub struct UserGetMeData {
+    /// Email
+    pub email: String,
+
+    /// First name
+    pub first_name: String,
+
+    /// Middle name
+    pub middle_name: String,
+
+    /// Last Name
+    pub last_name: String,
+}
+
+impl From<user::Model> for UserGetMeData {
+    fn from(model: user::Model) -> Self { 
+        UserGetMeData {
+            email: model.email,
+            first_name: model.first_name,
+            middle_name: model.middle_name,
+            last_name: model.last_name
+        }
+    }
+}
+
+
+/// # Edit Account Data
 pub struct DataEditUserAvatar<'r> {
     pub file_name: &'r str,
     pub content_type: ContentType,

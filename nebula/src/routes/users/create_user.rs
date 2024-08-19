@@ -1,30 +1,12 @@
+use mnger_preon::dto::users::DataCreateAccount;
 use rocket::response::status;
 use sea_orm_rocket::Connection;
-use rocket::serde::{Serialize, Deserialize, json::Json};
-use utoipa::ToSchema;
+use rocket::serde::json::Json;
 
 use mnger_preon::Result;
 use mnger_preon::r#impl::postgres::users::user::AbstractUser;
 use mnger_preon::r#impl::postgres::pool::Db;
 
-/// # Account Data
-#[derive(Serialize, Deserialize, ToSchema)]
-pub struct DataCreateAccount {
-    /// Valid email address
-    pub email: String,
-
-    /// Password
-    pub password: String,
-
-    /// First Name
-    pub first_name: String,
-
-    /// Middle Name
-    pub middle_name: String,
-
-    // Last Name
-    pub last_name: String,
-}
 
 /// Create user account
 #[utoipa::path(

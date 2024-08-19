@@ -1,3 +1,4 @@
+use mnger_preon::dto::work_order::WorkOrderItem;
 use sea_orm_rocket::Connection;
 use rocket::serde::json::Json;
 
@@ -5,8 +6,6 @@ use mnger_preon::Result;
 use mnger_preon::models::Session as Session;
 use mnger_preon::r#impl::postgres::workorders::workorder::AbstractWorkOrder;
 use mnger_preon::r#impl::postgres::pool::Db;
-
-use crate::routes::workorder::list_workorders::WorkOrderItem;
 
 /// Fetch single workorder
 #[utoipa::path(
