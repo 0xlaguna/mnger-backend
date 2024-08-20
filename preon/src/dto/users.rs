@@ -54,7 +54,7 @@ pub struct DataCreateAccount {
     pub first_name: String,
 
     /// Middle Name
-    pub middle_name: String,
+    pub middle_name: Option<String>,
 
     // Last Name
     pub last_name: String,
@@ -75,7 +75,7 @@ pub struct FetchProfileResponse {
     pub first_name: String,
 
     /// Middle Name
-    pub middle_name: String,
+    pub middle_name: Option<String>,
 
     /// Last Name
     pub last_name: String,
@@ -105,7 +105,7 @@ pub struct UserGetMeData {
     pub first_name: String,
 
     /// Middle name
-    pub middle_name: String,
+    pub middle_name: Option<String>,
 
     /// Last Name
     pub last_name: String,
@@ -178,5 +178,5 @@ pub struct DataEditUser<'r> {
     pub last_name: String,
 
     // Avatar
-    pub avatar: DataEditUserAvatar<'r>,
+    pub avatar: Option<DataEditUserAvatar<'r>>,
 }

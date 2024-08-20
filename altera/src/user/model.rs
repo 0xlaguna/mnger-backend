@@ -9,6 +9,7 @@ pub enum User {
     FirstName,
     MiddleName,
     LastName,
+    Avatar,
     Password,
     Disabled
 }
@@ -20,4 +21,25 @@ pub enum Session {
     Token,
     Name,
     UserId
+}
+
+#[derive(DeriveIden)]
+pub enum Verification {
+    Table,
+    Id,
+    UserId,
+    TypeId,
+    Token,
+    Pending,
+    ExpiresAt,
+    Enabled
+}
+
+#[derive(DeriveIden)]
+pub enum VerificationType {
+    Table,
+    Id,
+    Name,
+    Description,
+    Enabled
 }
