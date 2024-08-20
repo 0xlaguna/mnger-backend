@@ -3,7 +3,7 @@ name = "mnger-app"
 version = "0.1.0"
 authors = ["Maykol Laguna <lagunamichael2@outlook.com>"]
 edition = "2021"
-rust-version = "1.79"
+rust-version = "1.79.0"
 
 [workspace]
 members = [".", "nebula", "altera", "preon"]
