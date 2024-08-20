@@ -1,10 +1,12 @@
-use crate::models::user::{
-    self, 
-    Entity as UserEntity, 
-    Model as UserModel,
-    ActiveModel as UserActiveModel
-};
+use std::io::Write;
+
+use crate::{dto::users::DataEditUser, r#impl::storage::s3::{Opt, S3}, models::user::{
+    self, ActiveModel as UserActiveModel, Entity as UserEntity, Model as UserModel
+}};
 use sea_orm::*;
+
+use ulid::Ulid;
+use tempfile::NamedTempFile;
 
 use crate::{Result, Error, auth::util::hash_password};
 
@@ -31,7 +33,7 @@ impl AbstractUser {
         email: String,
         password: String,
         first_name: String,
-        middle_name: String,
+        middle_name: Option<String>,
         last_name: String
     ) -> Result<UserModel> {
 
@@ -45,7 +47,8 @@ impl AbstractUser {
             first_name: Set(first_name),
             middle_name: Set(middle_name),
             last_name: Set(last_name),
-            disabled: Set(false)
+            disabled: Set(false),
+            avatar: NotSet
         };
 
         let user = user
@@ -58,6 +61,60 @@ impl AbstractUser {
             })?;
 
         Ok(user)
+    }
+
+    pub async fn update_user(
+        db: &DbConn,
+        user_id: i32,
+        data: DataEditUser<'_>
+    ) -> Result<()> {
+        
+        let user = UserEntity::find_by_id(user_id)
+            .one(db)
+            .await
+            .map_err(|e: DbErr| Error::DatabaseError { 
+                operation: "find_user", 
+                with: "sessions",
+                info: e.to_string()
+            })?;
+
+        let mut user: UserActiveModel = user.ok_or(Error::NotFound)?.into();
+        
+        user.first_name = Set(data.first_name);
+        user.middle_name = Set(data.middle_name);
+        user.last_name = Set(data.last_name);
+        
+        // Update user file avatar
+        if let Some(avatar) = data.avatar {
+            let mut avatar_temp_file = NamedTempFile::new()
+                .map_err(|e| Error::InternalError { info: e.to_string()})?;
+
+            let _ = avatar_temp_file.write_all(avatar.data);
+
+            let mut buf = [0; ulid::ULID_LEN];
+            let filename = Ulid::new().array_to_str(&mut buf);
+
+            let file_key = format!(
+                "user-images/{}.{}", 
+                filename, 
+                avatar.extension
+            );
+
+            // Upload image to s3
+            S3::put_object(&Opt { key: file_key.clone(), source: avatar_temp_file.path().to_path_buf() }).await?;
+
+            user.avatar = Set(Some(file_key));
+        };
+
+        user.update(db)
+            .await
+            .map_err(|e: DbErr| Error::DatabaseError { 
+                operation: "update_user", 
+                with: "sessions",
+                info: e.to_string()
+            })?;
+
+        Ok(())
     }
 
     pub async fn find_users_in_page(
@@ -92,55 +149,3 @@ impl AbstractUser {
     }
 
 }
-
-// use ::entity::{user, user::Entity as User};
-// use sea_orm::*;
-
-// pub struct Mutation;
-
-// impl Mutation {
-//     pub async fn create_user(
-//         db: &DbConn,
-//         form_data: user::Model,
-//     ) -> Result<user::ActiveModel, DbErr> {
-//         user::ActiveModel {
-//             username: Set(form_data.username.to_owned()),
-//             ..Default::default()
-//         }
-//         .save(db)
-//         .await
-//     }
-
-//     pub async fn update_user_by_id(
-//         db: &DbConn,
-//         id: i32,
-//         form_data: user::Model,
-//     ) -> Result<user::Model, DbErr> {
-//         let user: user::ActiveModel = User::find_by_id(id)
-//             .one(db)
-//             .await?
-//             .ok_or(DbErr::Custom("Cannot find user.".to_owned()))
-//             .map(Into::into)?;
-
-//         user::ActiveModel {
-//             id: user.id,
-//             username: Set(form_data.username.to_owned()),
-//         }
-//         .update(db)
-//         .await
-//     }
-
-//     pub async fn delete_user(db: &DbConn, id: i32) -> Result<DeleteResult, DbErr> {
-//         let user: user::ActiveModel = User::find_by_id(id)
-//             .one(db)
-//             .await?
-//             .ok_or(DbErr::Custom("Cannot find user.".to_owned()))
-//             .map(Into::into)?;
-
-//         user.delete(db).await
-//     }
-
-//     pub async fn delete_all_users(db: &DbConn) -> Result<DeleteResult, DbErr> {
-//         User::delete_many().exec(db).await
-//     }
-// }

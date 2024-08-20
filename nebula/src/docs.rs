@@ -1,11 +1,27 @@
 use utoipa::openapi::security::{ApiKey, ApiKeyValue, SecurityScheme};
 use utoipa::{Modify, OpenApi};
 
-use crate::routes::account::login::{DataLoginAccount, LoginResponse, self};
-use crate::routes::users::create_user::{DataCreateAccount, self};
-use crate::routes::users::fetch_profile::{FetchProfileResponse, self};
-use crate::routes::workorder::create_workorder::{DataCreateWorkOrder, self};
-use crate::routes::workorder::list_workorders::{WorkOrderItem, WorkOrderListData, self};
+use crate::routes::account::login::{self};
+use crate::routes::users::create_user::{self};
+use crate::routes::users::fetch_profile::{self};
+use crate::routes::users::edit_user::{self};
+use crate::routes::users::me::{self};
+use crate::routes::workorder::create_workorder::{self};
+use crate::routes::workorder::list_workorders::{self};
+
+use mnger_preon::dto::users::DataEditUser;
+use mnger_preon::dto::users::{
+    DataLoginAccount, 
+    LoginResponse,
+    DataCreateAccount,
+    FetchProfileResponse,
+    UserGetMeData
+};
+use mnger_preon::dto::work_order::{
+    DataCreateWorkOrder,
+    WorkOrderItem,
+    WorkOrderListData
+};
 
 #[derive(OpenApi)]
 #[openapi(
@@ -13,12 +29,14 @@ use crate::routes::workorder::list_workorders::{WorkOrderItem, WorkOrderListData
         login::req,
         create_user::req,
         fetch_profile::req,
+        edit_user::req,
         create_workorder::req,
-        list_workorders::req
+        list_workorders::req,
+        me::req,
     ),
     components(
         schemas(DataLoginAccount, LoginResponse),
-        schemas(DataCreateAccount, FetchProfileResponse),
+        schemas(DataCreateAccount, FetchProfileResponse, DataEditUser, UserGetMeData),
         schemas(DataCreateWorkOrder),
         schemas(WorkOrderItem, WorkOrderListData),
     ),

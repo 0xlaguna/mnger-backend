@@ -1,47 +1,11 @@
+use mnger_preon::dto::users::{DataLoginAccount, LoginResponse};
 use sea_orm_rocket::Connection;
-use rocket::serde::{Serialize, Deserialize, json::Json};
+use rocket::serde::json::Json;
 
 use mnger_preon::Result;
-
 use mnger_preon::r#impl::postgres::users::account::AbstractAccount;
-use mnger_preon::models::Session;
-
 use mnger_preon::r#impl::postgres::pool::Db;
 
-use utoipa::ToSchema;
-
-/// # Account Data
-#[derive(Serialize, Deserialize, ToSchema)]
-pub struct DataLoginAccount {
-    /// Valid email address
-    pub email: String,
-
-    /// Password
-    pub password: String,
-
-    /// Session name
-    pub name: Option<String>,
-
-}
-
-#[derive(Serialize, Deserialize, ToSchema)]
-pub struct LoginResponse {
-    pub token: String,
-
-    pub name: String,
-
-    pub user_id: i32,
-}
-
-impl From<Session> for LoginResponse {
-    fn from(session: Session) -> Self {
-        LoginResponse {
-            token: session.token,
-            name: session.name,
-            user_id: session.user_id,
-        }
-    }
-}
 
 /// Login user account
 #[utoipa::path(
@@ -64,9 +28,9 @@ pub async fn req(conn: Connection<'_, Db>, data: Json<DataLoginAccount>) -> Resu
     let session = AbstractAccount
         ::login(
             db, 
-            data.email, 
-            data.password, 
-            data.name
+            &data.email, 
+            &data.password, 
+            data.name.as_deref()
         ).await?;
 
     let response: LoginResponse = session.into();

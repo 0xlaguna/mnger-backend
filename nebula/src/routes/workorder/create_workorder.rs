@@ -1,30 +1,13 @@
-use altera::sea_orm::prelude::DateTimeWithTimeZone;
+use mnger_preon::dto::work_order::DataCreateWorkOrder;
 use rocket::response::status;
 use sea_orm_rocket::Connection;
-use rocket::serde::{Serialize, Deserialize, json::Json};
-use utoipa::ToSchema;
+use rocket::serde::json::Json;
 
 use mnger_preon::Result;
 use mnger_preon::models::Session as Session;
 use mnger_preon::r#impl::postgres::workorders::workorder::AbstractWorkOrder;
 use mnger_preon::r#impl::postgres::pool::Db;
 
-/// WorkOrder Create Data
-#[derive(Serialize, Deserialize, ToSchema)]
-pub struct DataCreateWorkOrder {
-    /// WorkOrder name
-    pub title: String,
-
-    /// Descripion
-    pub description: String,
-
-    /// Start Date
-    pub start_date: DateTimeWithTimeZone,
-
-    /// End Date
-    pub end_date: Option<DateTimeWithTimeZone>,
-
-}
 
 /// Create WorkOrder
 #[utoipa::path(

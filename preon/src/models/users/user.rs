@@ -20,7 +20,7 @@ pub struct Model {
     pub first_name: String,
 
     /// Middle name
-    pub middle_name: String,
+    pub middle_name: Option<String>,
 
     /// Last Name
     pub last_name: String,
@@ -30,6 +30,9 @@ pub struct Model {
 
     /// Is account disabled ?
     pub disabled: bool,
+
+    /// Avatar
+    pub avatar: Option<String>,
 
 }
 
