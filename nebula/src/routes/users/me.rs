@@ -1,4 +1,4 @@
-use mnger_preon::dto::users::UserGetMeData;
+use mnger_preon::dto::users::User;
 use sea_orm_rocket::Connection;
 use rocket::serde::json::Json;
 
@@ -16,7 +16,7 @@ use mnger_preon::r#impl::postgres::pool::Db;
     ),
 )]
 #[get("/me")]
-pub async fn req(conn: Connection<'_, Db>, mut _session: Session) -> Result<Json<UserGetMeData>> {
+pub async fn req(conn: Connection<'_, Db>, mut _session: Session) -> Result<Json<User>> {
     let db = conn.into_inner();
 
     let user = AbstractUser
@@ -25,7 +25,7 @@ pub async fn req(conn: Connection<'_, Db>, mut _session: Session) -> Result<Json
             _session.user_id
         ).await?;
 
-    let user: UserGetMeData = user.into();
+    let user: User = user.into();
 
     Ok(Json(user))
 }

@@ -18,7 +18,7 @@ use mnger_preon::r#impl::postgres::pool::Db;
 pub async fn req(
     conn: Connection<'_, Db>, 
     mut _session: Session, 
-    id: String
+    id: &str
 ) -> Result<Json<WorkOrderItem>> {
     let db = conn.into_inner();
 

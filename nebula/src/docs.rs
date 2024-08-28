@@ -14,7 +14,7 @@ use mnger_preon::dto::users::{
     DataLoginAccount, 
     LoginResponse,
     DataCreateAccount,
-    FetchProfileResponse,
+    User,
     UserGetMeData
 };
 use mnger_preon::dto::work_order::{
@@ -36,7 +36,7 @@ use mnger_preon::dto::work_order::{
     ),
     components(
         schemas(DataLoginAccount, LoginResponse),
-        schemas(DataCreateAccount, FetchProfileResponse, DataEditUser, UserGetMeData),
+        schemas(DataCreateAccount, User, DataEditUser, UserGetMeData),
         schemas(DataCreateWorkOrder),
         schemas(WorkOrderItem, WorkOrderListData),
     ),

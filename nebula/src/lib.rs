@@ -22,7 +22,7 @@ pub mod cors;
 fn all_options() { }
 
 #[tokio::main]
-async fn start()  -> Result<(), rocket::Error> {
+async fn start() -> Result<(), rocket::Error> {
     dotenv().ok();
     
     let rocket = rocket::build()

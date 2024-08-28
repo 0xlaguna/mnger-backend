@@ -67,7 +67,7 @@ impl AbstractUser {
         db: &DbConn,
         user_id: i32,
         data: DataEditUser<'_>
-    ) -> Result<()> {
+    ) -> Result<UserModel> {
         
         let user = UserEntity::find_by_id(user_id)
             .one(db)
@@ -78,12 +78,17 @@ impl AbstractUser {
                 info: e.to_string()
             })?;
 
+        // Delete previous avatar if any
+        if let Some(old_avatar) = user.clone().unwrap().avatar {
+            S3::delete_object(old_avatar).await?;
+        }
+
         let mut user: UserActiveModel = user.ok_or(Error::NotFound)?.into();
         
         user.first_name = Set(data.first_name);
         user.middle_name = Set(data.middle_name);
         user.last_name = Set(data.last_name);
-        
+
         // Update user file avatar
         if let Some(avatar) = data.avatar {
             let mut avatar_temp_file = NamedTempFile::new()
@@ -106,7 +111,7 @@ impl AbstractUser {
             user.avatar = Set(Some(file_key));
         };
 
-        user.update(db)
+        let user = user.update(db)
             .await
             .map_err(|e: DbErr| Error::DatabaseError { 
                 operation: "update_user", 
@@ -114,7 +119,7 @@ impl AbstractUser {
                 info: e.to_string()
             })?;
 
-        Ok(())
+        Ok(user)
     }
 
     pub async fn find_users_in_page(

@@ -4,7 +4,11 @@ use rocket::serde::{Serialize, Deserialize};
 use rocket::form::{self, FromForm, DataField, FromFormField};
 use utoipa::ToSchema;
 
+use crate::r#impl::storage::s3::S3;
 use crate::models::{user, Session};
+
+
+/// # User
 
 
 /// # Login Account Data
@@ -61,7 +65,7 @@ pub struct DataCreateAccount {
 }
 
 #[derive(Serialize, Deserialize, ToSchema)]
-pub struct FetchProfileResponse {
+pub struct User {
     /// User identifier
     pub id: i32,
 
@@ -79,17 +83,21 @@ pub struct FetchProfileResponse {
 
     /// Last Name
     pub last_name: String,
+
+    /// Avatar
+    pub avatar: Option<String>,
 }
 
-impl From<user::Model> for FetchProfileResponse {
+impl From<user::Model> for User {
     fn from(user: user::Model) -> Self {
-        FetchProfileResponse {
+        User {
             id: user.id,
             username: user.username,
             email: user.email,
             first_name: user.first_name,
             middle_name: user.middle_name,
-            last_name: user.last_name
+            last_name: user.last_name,
+            avatar: S3::extract_filename(user.avatar)
         }
     }
 }
@@ -109,6 +117,8 @@ pub struct UserGetMeData {
 
     /// Last Name
     pub last_name: String,
+
+    pub avatar: Option<String>,
 }
 
 impl From<user::Model> for UserGetMeData {
@@ -117,7 +127,8 @@ impl From<user::Model> for UserGetMeData {
             email: model.email,
             first_name: model.first_name,
             middle_name: model.middle_name,
-            last_name: model.last_name
+            last_name: model.last_name,
+            avatar: S3::extract_filename(model.avatar)
         }
     }
 }

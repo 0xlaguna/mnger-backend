@@ -1,9 +1,10 @@
-use std::path::PathBuf;
+use std::{path::PathBuf, time::Duration};
 
 use aws_config::Region;
 use aws_sdk_s3::{
     primitives::ByteStream,
     Client,
+    presigning::PresigningConfig
 };
 use clap::Parser;
 
@@ -47,5 +48,60 @@ impl S3 {
             })?;
 
         Ok(())
+    }
+
+    pub async fn delete_object(key: String) -> Result<()> {
+        let config = aws_config::from_env().region(Region::new("us-east-1")).load().await;
+        let client = Client::new(&config);
+        let bucket = std::env::var("AWS_BUCKET")
+            .map_err(|e| Error::InternalError { info: e.to_string()})?;
+
+        let _request = client
+            .delete_object()
+            .bucket(bucket)
+            .key(key)
+            .send()
+            .await
+            .map_err(|e|Error::InternalError {
+                info: e.to_string()
+            })?;
+
+        Ok(())
+    }
+
+    pub async fn generate_presigned_url(key: String) -> Result<String> {
+        let config = aws_config::from_env().region(Region::new("us-east-1")).load().await;
+        let client = Client::new(&config);
+        let bucket = std::env::var("AWS_BUCKET")
+            .map_err(|e| Error::InternalError { info: e.to_string()})?;
+
+        let presign_config = PresigningConfig::expires_in(Duration::from_secs(3600))
+            .map_err(|e| Error::InternalError { info: e.to_string()})?;
+
+        let request = client
+            .get_object()
+            .bucket(bucket)
+            .key(key)
+            .presigned(presign_config)
+            .await
+            .map_err(|e|Error::InternalError {
+                info: e.to_string()
+            })?;
+
+        let signed_url = request.uri().to_string();
+
+        Ok(signed_url)
+    }
+
+    pub fn extract_filename(file_path: Option<String>) -> Option<String> {
+        if let Some(avatar) = file_path {
+            let parts: Vec<&str> = avatar.split('/').collect();
+
+            if let Some(filename_with_ext) = parts.last() {
+                let name_parts: Vec<&str> = filename_with_ext.split('.').collect();
+                return name_parts.first().cloned().map(str::to_string);
+            }
+        }
+        None
     }
 }

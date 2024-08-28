@@ -46,7 +46,7 @@ impl AbstractWorkOrder {
     }
 
     /// Find Work Order
-    pub async fn fetch_work_order(db: &DbConn, id: String) -> Result<WorkOrderModel> {
+    pub async fn fetch_work_order(db: &DbConn, id: &str) -> Result<WorkOrderModel> {
         let workorder = WorkOrderEntity::find_by_id(id)
             .one(db)
             .await
