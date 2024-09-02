@@ -37,8 +37,7 @@ impl AbstractAccount {
 
     /// Find session by token
     pub async fn find_session_by_token(db: &DbConn, token: String) -> Result<SessionModel> {
-        let session = SessonEntity
-            ::find()
+        let session = SessonEntity::find()
             .filter(session::Column::Token.eq(token))
             .one(db)
             .await
@@ -47,7 +46,7 @@ impl AbstractAccount {
                 with: "sessions",
                 info: e.to_string()
             })?
-            .ok_or(Error::NotFound)?;
+            .ok_or(Error::InvalidSession)?;
         
         Ok(session)
     }

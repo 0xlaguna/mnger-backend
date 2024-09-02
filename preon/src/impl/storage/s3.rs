@@ -97,10 +97,7 @@ impl S3 {
         if let Some(avatar) = file_path {
             let parts: Vec<&str> = avatar.split('/').collect();
 
-            if let Some(filename_with_ext) = parts.last() {
-                let name_parts: Vec<&str> = filename_with_ext.split('.').collect();
-                return name_parts.first().cloned().map(str::to_string);
-            }
+            return parts.last().cloned().map(str::to_string);
         }
         None
     }

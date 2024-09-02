@@ -180,13 +180,13 @@ impl<'r> FromFormField<'r> for DataEditUserAvatar<'r> {
 pub struct DataEditUser<'r> {
     /// First Name
 
-    pub first_name: String,
+    pub first_name: Option<String>,
     /// Middle Name
 
     pub middle_name: Option<String>,
 
     // Last Name
-    pub last_name: String,
+    pub last_name: Option<String>,
 
     // Avatar
     pub avatar: Option<DataEditUserAvatar<'r>>,

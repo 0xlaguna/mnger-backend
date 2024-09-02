@@ -84,10 +84,18 @@ impl AbstractUser {
         }
 
         let mut user: UserActiveModel = user.ok_or(Error::NotFound)?.into();
-        
-        user.first_name = Set(data.first_name);
-        user.middle_name = Set(data.middle_name);
-        user.last_name = Set(data.last_name);
+
+        if let Some(first_name) = data.first_name {
+            user.first_name = Set(first_name)
+        }
+
+        if let Some(middle_name) = data.middle_name {
+            user.first_name = Set(middle_name)
+        }
+
+        if let Some(last_name) = data.last_name {
+            user.first_name = Set(last_name)
+        }
 
         // Update user file avatar
         if let Some(avatar) = data.avatar {
