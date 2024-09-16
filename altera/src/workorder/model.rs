@@ -1,5 +1,6 @@
 use sea_orm_migration::prelude::*;
 
+#[allow(dead_code)]
 #[derive(DeriveIden)]
 pub enum WorkOrder {
     Table,
@@ -12,4 +13,14 @@ pub enum WorkOrder {
     CreatedBy,
     CreatedAt,
     UpdatedAt
+}
+
+#[allow(dead_code)]
+#[derive(DeriveIden)]
+pub enum WorkOrderAssignment {
+    Table,
+    WorkOrderId,
+    UserId,
+    TeamId,
+    AssignedAt
 }

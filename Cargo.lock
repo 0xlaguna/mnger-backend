@@ -2929,6 +2929,7 @@ dependencies = [
  "sea-orm-rocket",
  "serde",
  "serde_json",
+ "strong_id",
  "tempfile",
  "tracing",
  "ulid",
@@ -5134,6 +5135,28 @@ dependencies = [
  "finl_unicode",
  "unicode-bidi",
  "unicode-normalization",
+]
+
+[[package]]
+name = "strong_id"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a2a2bd4c10aaf233edd6ffd34bf4f78a4b34fc1703b1ab1136b4c5842769c455"
+dependencies = [
+ "bitvec",
+ "strong_id_macros",
+ "thiserror",
+ "uuid",
+]
+
+[[package]]
+name = "strong_id_macros"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "77e2b0089ac01e50d2b3528ca4e833cc2dfc5d2ef3e7cd399f51517402bede96"
+dependencies = [
+ "quote 1.0.35",
+ "syn 2.0.46",
 ]
 
 [[package]]

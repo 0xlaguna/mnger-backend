@@ -1,6 +1,6 @@
 use sea_orm_migration::prelude::*;
 
-use crate::workorder::model::WorkOrder;
+use crate::workorder::model::{WorkOrder, WorkOrderAssignment};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -8,34 +8,46 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+        
+        manager
+            .get_connection()
+            .execute_unprepared(
+                "
+                    CREATE TABLE work_order
+                    (
+                        id              typeid                      default typeid_generate('workorder')    not null    primary key,
+                        title           varchar                                                             not null,
+                        description     varchar,
+                        status          smallint,
+                        start_date      timestamp with time zone,
+                        end_date        timestamp with time zone,
+                        created_by      typeid
+                            references \"user\"
+                            on delete set null,
+                        created_at      timestamp with time zone    default now()                           not null,
+                        updated_at      timestamp with time zone
+                    )
+                "
+            ).await?;
 
         manager
-            .create_table(
-                Table::create()
-                    .table(WorkOrder::Table)
-                    .if_not_exists()
-                    .col(
-                        ColumnDef::new(WorkOrder::Id)
-                            .string()
-                            .extra("DEFAULT generate_ulid()")
-                            .primary_key()
-                            .not_null()
+            .get_connection()
+            .execute_unprepared(
+                "
+                    CREATE TABLE work_order_assignment
+                    (
+                        id              bigserial                                                                       primary key,
+                        work_order_id   typeid                                                              not null
+                            references work_order,
+                        user_id         typeid
+                            references \"user\",
+                        team_id         typeid
+                            references team,
+                        assigned_at     timestamp with time zone    default now()
                     )
-                    .col(ColumnDef::new(WorkOrder::Title).string().not_null())
-                    .col(ColumnDef::new(WorkOrder::Description).string())
-                    .col(ColumnDef::new(WorkOrder::Status).small_integer().not_null())
-                    .col(ColumnDef::new(WorkOrder::StartDate).timestamp_with_time_zone().not_null())
-                    .col(ColumnDef::new(WorkOrder::EndDate).timestamp_with_time_zone())
-                    .col(ColumnDef::new(WorkOrder::CreatedBy).integer().not_null())
-                    .col(
-                        ColumnDef::new(WorkOrder::CreatedAt)
-                            .timestamp_with_time_zone()
-                            .extra("DEFAULT now()")
-                            .not_null()
-                    )
-                    .col(ColumnDef::new(WorkOrder::UpdatedAt).timestamp_with_time_zone())
-                    .to_owned()
-            ).await?;
+                "
+            )
+            .await?;
 
         Ok(())
     }
@@ -46,6 +58,11 @@ impl MigrationTrait for Migration {
                 Table::drop().table(WorkOrder::Table).to_owned()
             )
             .await?;
+
+        manager
+            .drop_table(
+                Table::drop().table(WorkOrderAssignment::Table).to_owned()
+            ).await?;
 
         Ok(())
     }

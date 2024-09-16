@@ -1,6 +1,6 @@
 use sea_orm_migration::prelude::*;
 
-use crate::user::model::{User, Verification, VerificationType};
+use crate::user::model::{Verification, VerificationType};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -8,14 +8,6 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        manager
-            .alter_table(
-                Table::alter()
-                    .table(User::Table)
-                    .add_column(ColumnDef::new(User::Avatar).string())
-                    .to_owned()
-            ).await?;
-
         manager
             .create_table(
                 Table::create()
@@ -59,14 +51,6 @@ impl MigrationTrait for Migration {
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        manager
-            .alter_table(
-                Table::alter()
-                    .table(User::Table)
-                    .drop_column(Alias::new("avatar"))
-                    .to_owned()
-            ).await?;
-
         manager
             .drop_table(
                 Table::drop().table(Verification::Table).to_owned()

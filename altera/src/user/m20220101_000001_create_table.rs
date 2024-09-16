@@ -8,54 +8,100 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
+
         manager
-            .create_table(
-                Table::create()
-                    .table(User::Table)
-                    .if_not_exists()
-                    .col(
-                        ColumnDef::new(User::Id)
-                            .integer()
-                            .not_null()
-                            .auto_increment()
-                            .primary_key(),
+            .get_connection()
+            .execute_unprepared(
+                "
+                    CREATE TABLE company
+                    (
+                        id              typeid                      default typeid_generate('company')      not null    primary key,
+                        name            varchar                                                             not null,
+                        address         text,
+                        phone_number    varchar,
+                        email           varchar,
+                        logo            varchar,
+                        website         varchar,
+                        created_at      timestamp with time zone    default now(),
+                        updated_at      timestamp with time zone
                     )
-                    .col(ColumnDef::new(User::Username).string())
-                    .col(ColumnDef::new(User::Email).string().not_null().unique_key())
-                    .col(ColumnDef::new(User::FirstName).string().not_null())
-                    .col(ColumnDef::new(User::MiddleName).string())
-                    .col(ColumnDef::new(User::LastName).string().not_null())
-                    .col(ColumnDef::new(User::Password).string().not_null())
-                    .col(ColumnDef::new(User::Disabled).boolean().not_null())
-                    .to_owned(),
+                "
             ).await?;
-        
+
         manager
-            .create_table(
-                Table::create()
-                    .table(Session::Table)
-                    .if_not_exists()
-                    .col(
-                        ColumnDef::new(Session::Id)
-                            .integer()
-                            .not_null()
-                            .auto_increment()
-                            .primary_key(),
+            .get_connection()
+            .execute_unprepared(
+                "
+                    CREATE TABLE \"user\"
+                    (
+                        id              typeid                      default typeid_generate('user')     not null    primary key,
+                        username        varchar,
+                        email           varchar                                                         not null    unique,
+                        first_name      varchar                                                         not null,
+                        middle_name     varchar,
+                        last_name       varchar,
+                        dob             date,
+                        avatar          varchar,
+                        timezone        varchar,
+                        password        varchar                                                         not null,
+                        enabled         bool                                                            not null,
+                        company_id      typeid
+                            references company
+                            on delete set null,
+                        created_at      timestamp with time zone    default now()                       not null,
+                        updated_at      timestamp with time zone
                     )
-                    .col(ColumnDef::new(Session::Token).string())
-                    .col(ColumnDef::new(Session::Name).string())
-                    .col(ColumnDef::new(Session::UserId).integer())
-                    .to_owned(),
+                "
             ).await?;
-        
+
         manager
-            .create_foreign_key(
-                ForeignKey::create()
-                    .name("FK_session_user_id")
-                    .from(Session::Table, Session::UserId)
-                    .to(User::Table, User::Id)
-                    .on_delete(ForeignKeyAction::Cascade)
-                    .to_owned()
+            .get_connection()
+            .execute_unprepared(
+                "
+                    CREATE TABLE session
+                    (
+                        id              typeid                      default typeid_generate('session')      not null    primary key,
+                        token           varchar                                                             not null,
+                        name            varchar,
+                        expires_at      timestamp with time zone                                            not null,
+                        user_id         typeid                                                              not null
+                            references \"user\"
+                            on delete cascade
+                    )
+                "
+            ).await?;
+
+        manager
+            .get_connection()
+            .execute_unprepared(
+                "
+                    CREATE TABLE team
+                    (
+                        id              typeid                      default typeid_generate('team')     not null   primary key,
+                        name            varchar                                                         not null   unique,
+                        description     text,
+                        created_by      typeid
+                            references \"user\",
+                        created_at      timestamp with time zone    default now()                       not null,
+                        updated_at      timestamp with time zone
+                    )
+                "
+            ).await?;
+
+        manager
+            .get_connection()
+            .execute_unprepared(
+                "
+                    CREATE TABLE team_participant
+                    (
+                        id              bigserial                                                                       primary key,
+                        team_id         typeid                                                          not null
+                            references team,
+                        user_id         typeid                                                          not null
+                            references \"user\",
+                        joined_at       timestamp with time zone    default now()                       not null
+                    )
+                "
             ).await?;
 
         Ok(())
