@@ -15,7 +15,7 @@ impl MigrationTrait for Migration {
                 "
                     CREATE TABLE company
                     (
-                        id              typeid                      default typeid_generate('company')      not null    primary key,
+                        id              text                      default typeid_generate_text('cmp')       not null    primary key,
                         name            varchar                                                             not null,
                         address         text,
                         phone_number    varchar,
@@ -34,10 +34,10 @@ impl MigrationTrait for Migration {
                 "
                     CREATE TABLE \"user\"
                     (
-                        id              typeid                      default typeid_generate('user')     not null    primary key,
+                        id              text                      default typeid_generate_text('user')      not null    primary key,
                         username        varchar,
-                        email           varchar                                                         not null    unique,
-                        first_name      varchar                                                         not null,
+                        email           varchar                                                             not null    unique,
+                        first_name      varchar                                                             not null,
                         middle_name     varchar,
                         last_name       varchar,
                         dob             date,
@@ -45,7 +45,7 @@ impl MigrationTrait for Migration {
                         timezone        varchar,
                         password        varchar                                                         not null,
                         enabled         bool                                                            not null,
-                        company_id      typeid
+                        company_id      text
                             references company
                             on delete set null,
                         created_at      timestamp with time zone    default now()                       not null,
@@ -60,11 +60,11 @@ impl MigrationTrait for Migration {
                 "
                     CREATE TABLE session
                     (
-                        id              typeid                      default typeid_generate('session')      not null    primary key,
+                        id              text                      default typeid_generate_text('sess')      not null    primary key,
                         token           varchar                                                             not null,
                         name            varchar,
                         expires_at      timestamp with time zone                                            not null,
-                        user_id         typeid                                                              not null
+                        user_id         text                                                                not null
                             references \"user\"
                             on delete cascade
                     )
@@ -77,10 +77,10 @@ impl MigrationTrait for Migration {
                 "
                     CREATE TABLE team
                     (
-                        id              typeid                      default typeid_generate('team')     not null   primary key,
+                        id              text                      default typeid_generate_text('team')     not null   primary key,
                         name            varchar                                                         not null   unique,
                         description     text,
-                        created_by      typeid
+                        created_by      text
                             references \"user\",
                         created_at      timestamp with time zone    default now()                       not null,
                         updated_at      timestamp with time zone
@@ -95,9 +95,9 @@ impl MigrationTrait for Migration {
                     CREATE TABLE team_participant
                     (
                         id              bigserial                                                                       primary key,
-                        team_id         typeid                                                          not null
+                        team_id         text                                                            not null
                             references team,
-                        user_id         typeid                                                          not null
+                        user_id         text                                                            not null
                             references \"user\",
                         joined_at       timestamp with time zone    default now()                       not null
                     )

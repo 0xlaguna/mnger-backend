@@ -10,7 +10,7 @@ pub struct Model {
     #[sea_orm(
         primary_key,
         auto_increment = false,
-        column_type = "custom(\"typeid\")"
+        column_type = "Text"
     )]
     pub id: String,
 

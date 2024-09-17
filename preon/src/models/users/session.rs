@@ -10,7 +10,7 @@ pub struct Model {
     #[sea_orm(
         primary_key,
         auto_increment = false,
-        column_type = "custom(\"typeid\")"
+        column_type = "Text"
     )]
     pub id: String,
 
@@ -23,7 +23,7 @@ pub struct Model {
     pub expires_at: DateTimeWithTimeZone,
 
     /// User id
-    #[sea_orm(column_type = "custom(\"typeid\")")]
+    #[sea_orm(column_type = "Text")]
     pub user_id: String,
 }
 

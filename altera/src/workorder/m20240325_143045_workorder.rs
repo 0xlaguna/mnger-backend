@@ -15,13 +15,13 @@ impl MigrationTrait for Migration {
                 "
                     CREATE TABLE work_order
                     (
-                        id              typeid                      default typeid_generate('workorder')    not null    primary key,
+                        id              text                      default typeid_generate_text('workorder')    not null    primary key,
                         title           varchar                                                             not null,
                         description     varchar,
                         status          smallint,
                         start_date      timestamp with time zone,
                         end_date        timestamp with time zone,
-                        created_by      typeid
+                        created_by      text
                             references \"user\"
                             on delete set null,
                         created_at      timestamp with time zone    default now()                           not null,
@@ -37,11 +37,11 @@ impl MigrationTrait for Migration {
                     CREATE TABLE work_order_assignment
                     (
                         id              bigserial                                                                       primary key,
-                        work_order_id   typeid                                                              not null
+                        work_order_id   text                                                              not null
                             references work_order,
-                        user_id         typeid
+                        user_id         text
                             references \"user\",
-                        team_id         typeid
+                        team_id         text
                             references team,
                         assigned_at     timestamp with time zone    default now()
                     )

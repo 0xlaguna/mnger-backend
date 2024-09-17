@@ -10,7 +10,7 @@ pub struct Model {
     #[sea_orm(
         primary_key,
         auto_increment = false,
-        column_type = "custom(\"typeid\")"
+        column_type = "Text"
     )]
     pub id: String,
 
@@ -44,7 +44,7 @@ pub struct Model {
     /// Is account disabled ?
     pub enabled: bool,
 
-    #[sea_orm(column_type = "custom(\"typeid\")", nullable)]
+    #[sea_orm(column_type = "Text", nullable)]
     pub company_id: Option<String>,
 
     pub created_at: DateTimeWithTimeZone,

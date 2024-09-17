@@ -10,13 +10,13 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i64,
 
-    #[sea_orm(column_type = "custom(\"typeid\")")]
+    #[sea_orm(column_type = "Text")]
     pub work_order_id: String,
 
-    #[sea_orm(column_type = "custom(\"typeid\")", nullable)]
+    #[sea_orm(column_type = "Text", nullable)]
     pub user_id: Option<String>,
 
-    #[sea_orm(column_type = "custom(\"typeid\")", nullable)]
+    #[sea_orm(column_type = "Text", nullable)]
     pub team_id: Option<String>,
 
     pub assigned_at: DateTimeWithTimeZone,
