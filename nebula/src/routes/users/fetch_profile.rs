@@ -16,10 +16,10 @@ use mnger_preon::r#impl::postgres::pool::Db;
     ),
 )]
 #[get("/<target>/profile")]
-pub async fn req(conn: Connection<'_, Db>, mut _session: Session, target: i32) -> Result<Json<User>> {
+pub async fn req(conn: Connection<'_, Db>, mut _session: Session, target: String) -> Result<Json<User>> {
     let db = conn.into_inner();
 
-    let user = AbstractUser::fetch_user(db, target).await?;
+    let user = AbstractUser::fetch_user(db, &target).await?;
 
     let response: User = user.into();
 

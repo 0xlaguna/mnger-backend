@@ -2,10 +2,10 @@ use rocket::serde::{Deserialize, Serialize};
 use sea_orm::entity::prelude::*;
 
 #[derive(
-    Clone, Debug, PartialEq, Eq, DeriveEntityModel, Deserialize, Serialize
+    Clone, Debug, PartialEq, Eq, DeriveEntityModel, Deserialize, Serialize,
 )]
 #[serde(crate = "rocket::serde")]
-#[sea_orm(table_name = "work_order")]
+#[sea_orm(table_name = "team")]
 pub struct Model {
     #[sea_orm(
         primary_key,
@@ -14,21 +14,13 @@ pub struct Model {
     )]
     pub id: String,
 
-    /// Title
-    pub title: String,
+    #[sea_orm(unique)]
+    pub name: String,
 
-    /// Description
-    pub description: String,
+    #[sea_orm(column_type = "Text", nullable)]
+    pub description: Option<String>,
 
-    /// Status
-    pub status: Option<i16>,
-
-    /// Start Date
-    pub start_date: DateTimeWithTimeZone,
-
-    /// End Date
-    pub end_date: Option<DateTimeWithTimeZone>,
-
+    #[sea_orm(column_type = "custom(\"typeid\")", nullable)]
     pub created_by: Option<String>,
 
     pub created_at: DateTimeWithTimeZone,
@@ -38,20 +30,27 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
+    #[sea_orm(has_many = "super::team_participant::Entity")]
+    TeamParticipant,
     #[sea_orm(
-        belongs_to = "crate::models::user::Entity",
+        belongs_to = "super::user::Entity",
         from = "Column::CreatedBy",
-        to = "crate::models::user::Column::Id",
+        to = "super::user::Column::Id",
         on_update = "NoAction",
-        on_delete = "SetNull"
+        on_delete = "NoAction"
     )]
     User,
-
     #[sea_orm(has_many = "crate::models::work_order_assignment::Entity")]
     WorkOrderAssignment,
 }
 
-impl Related<crate::models::user::Entity> for Entity {
+impl Related<super::team_participant::Entity> for Entity {
+    fn to() -> RelationDef {
+        Relation::TeamParticipant.def()
+    }
+}
+
+impl Related<super::user::Entity> for Entity {
     fn to() -> RelationDef {
         Relation::User.def()
     }

@@ -30,9 +30,9 @@ pub struct DataLoginAccount {
 pub struct LoginResponse {
     pub token: String,
 
-    pub name: String,
+    pub name: Option<String>,
 
-    pub user_id: i32,
+    pub user_id: String,
 }
 
 impl From<Session> for LoginResponse {
@@ -67,7 +67,7 @@ pub struct DataCreateAccount {
 #[derive(Serialize, Deserialize, ToSchema)]
 pub struct User {
     /// User identifier
-    pub id: i32,
+    pub id: String,
 
     /// Username
     pub username: Option<String>,

@@ -106,8 +106,8 @@ impl MigrationTrait for Migration {
                             .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(Module::Name).integer())
-                    .col(ColumnDef::new(Module::Description).integer())
+                    .col(ColumnDef::new(Module::Name).string().not_null())
+                    .col(ColumnDef::new(Module::Description).string())
                     .to_owned()
             ).await?;
 

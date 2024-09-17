@@ -20,7 +20,7 @@ use mnger_preon::dto::users::{DataEditUser, User};
 pub async fn req(
     conn: Connection<'_, Db>,
     mut _session: Session,
-    target: i32, 
+    target: String, 
     data: Form<DataEditUser<'_>>
 ) -> Result<Json<User>> {
     let db = conn.into_inner();
@@ -33,7 +33,7 @@ pub async fn req(
     let user = AbstractUser
         ::update_user(
             db,
-            target,
+            &target,
             data
         ).await?;
     

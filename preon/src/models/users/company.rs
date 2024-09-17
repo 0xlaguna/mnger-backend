@@ -5,7 +5,7 @@ use sea_orm::entity::prelude::*;
     Clone, Debug, PartialEq, Eq, DeriveEntityModel, Deserialize, Serialize,
 )]
 #[serde(crate = "rocket::serde")]
-#[sea_orm(table_name = "session")]
+#[sea_orm(table_name = "company")]
 pub struct Model {
     #[sea_orm(
         primary_key,
@@ -14,28 +14,27 @@ pub struct Model {
     )]
     pub id: String,
 
-    /// Session token
-    pub token: String,
+    pub name: String,
 
-    /// Display name
-    pub name: Option<String>,
+    #[sea_orm(column_type = "Text", nullable)]
+    pub address: Option<String>,
 
-    pub expires_at: DateTimeWithTimeZone,
+    pub phone_number: Option<String>,
 
-    /// User id
-    #[sea_orm(column_type = "custom(\"typeid\")")]
-    pub user_id: String,
+    pub email: Option<String>,
+    
+    pub logo: Option<String>,
+
+    pub website: Option<String>,
+
+    pub created_at: Option<DateTimeWithTimeZone>,
+
+    pub updated_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(
-        belongs_to = "super::user::Entity",
-        from = "Column::UserId",
-        to = "super::user::Column::Id",
-        on_update = "NoAction",
-        on_delete = "Cascade"
-    )]
+    #[sea_orm(has_many = "super::user::Entity")]
     User,
 }
 

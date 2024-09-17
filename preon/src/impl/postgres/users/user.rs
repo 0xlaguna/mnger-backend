@@ -7,13 +7,14 @@ use sea_orm::*;
 
 use ulid::Ulid;
 use tempfile::NamedTempFile;
+use chrono::{FixedOffset, Utc};
 
 use crate::{Result, Error, auth::util::hash_password};
 
 pub struct AbstractUser;
 
 impl AbstractUser {
-    pub async fn fetch_user(db: &DbConn, id: i32) -> Result<UserModel> {
+    pub async fn fetch_user(db: &DbConn, id: &str) -> Result<UserModel> {
         let user = UserEntity::find_by_id(id)
             .one(db)
             .await
@@ -39,6 +40,9 @@ impl AbstractUser {
 
         let password = hash_password(password)?;
 
+        let fixed_now = Utc::now()
+            .with_timezone(&FixedOffset::east_opt(0).unwrap());
+
         let user = UserActiveModel {
             id: NotSet,
             username: NotSet,
@@ -47,8 +51,13 @@ impl AbstractUser {
             first_name: Set(first_name),
             middle_name: Set(middle_name),
             last_name: Set(last_name),
-            disabled: Set(false),
-            avatar: NotSet
+            enabled: Set(true),
+            avatar: NotSet,
+            company_id: NotSet,
+            created_at: Set(fixed_now),
+            dob: NotSet,
+            timezone: NotSet,
+            updated_at: NotSet
         };
 
         let user = user
@@ -65,7 +74,7 @@ impl AbstractUser {
 
     pub async fn update_user(
         db: &DbConn,
-        user_id: i32,
+        user_id: &str,
         data: DataEditUser<'_>
     ) -> Result<UserModel> {
         

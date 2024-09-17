@@ -8,6 +8,7 @@ use crate::models::session::{
 };
 use sea_orm::*;
 use nanoid::nanoid;
+use chrono::{Utc, FixedOffset, Duration};
 
 use crate::{Result, Error};
 
@@ -15,12 +16,17 @@ pub struct AbstractAccount;
 
 impl AbstractAccount {
     /// Create a new user Session
-    pub async fn create_session(db: &DbConn, name: &str, user_id: i32) -> Result<SessionModel> {
+    pub async fn create_session(db: &DbConn, _name: Option<&str>, user_id: String) -> Result<SessionModel> {
+        let fixed_now = Utc::now()
+            .with_timezone(&FixedOffset::east_opt(0).unwrap());
+        let expires_at = fixed_now + Duration::days(3);
+
         let session = SessionActiveModel {
             id: NotSet,
-            name: Set(name.to_string()),
+            name: NotSet,
             token: Set(nanoid!(64)),
-            user_id: Set(user_id)
+            user_id: Set(user_id),
+            expires_at: Set(expires_at)
         };
 
         let session = session
@@ -77,8 +83,6 @@ impl AbstractAccount {
         if !is_valid_password {
             return Err(Error::InvalidCredentials);
         }
-
-        let name = name.unwrap_or("Unknown");
 
         let session = AbstractAccount
             ::create_session(db, name, account.id).await?;

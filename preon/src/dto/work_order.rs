@@ -40,7 +40,7 @@ pub struct WorkOrderItem {
     pub end_date: Option<DateTimeWithTimeZone>,
 
     /// Created At
-    pub created_at: Option<DateTimeWithTimeZone>,
+    pub created_at: DateTimeWithTimeZone
 }
 
 /// WorkOrder List Data

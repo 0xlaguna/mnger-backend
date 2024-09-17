@@ -1,6 +1,11 @@
 mod users {
     pub mod user;
     pub mod session;
+    pub mod company;
+    pub mod team;
+    pub mod team_participant;
+    pub mod verification;
+    pub mod verficiation_type;
 }
 
 pub use users::*;
@@ -18,5 +23,6 @@ pub use authorization::*;
 
 mod workorders {
     pub mod workorder;
+    pub mod work_order_assignment;
 }
 pub use workorders::*;

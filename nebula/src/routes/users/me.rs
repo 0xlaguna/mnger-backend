@@ -22,7 +22,7 @@ pub async fn req(conn: Connection<'_, Db>, mut _session: Session) -> Result<Json
     let user = AbstractUser
         ::fetch_user(
             db,
-            _session.user_id
+            &_session.user_id
         ).await?;
 
     let user: User = user.into();

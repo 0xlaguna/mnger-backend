@@ -30,7 +30,7 @@ pub async fn req(conn: Connection<'_, Db>, mut _session: Session, data: Json<Dat
             data.description,
             data.start_date, 
             data.end_date, 
-            _session.user_id,
+            &_session.user_id,
         ).await?;
 
     Ok(status::NoContent)

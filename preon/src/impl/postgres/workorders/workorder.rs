@@ -20,17 +20,18 @@ impl AbstractWorkOrder {
         description: String,
         start_date: DateTimeWithTimeZone,
         end_date: Option<DateTimeWithTimeZone>,
-        created_by: i32
+        created_by: &str
     ) -> Result<WorkOrderModel> {
         let workorder = WorkOrderActiveModel {
             id: NotSet,
             title: Set(title),
             description: Set(description),
-            status: Set(1),
+            status: NotSet,
             start_date: Set(start_date),
             end_date: Set(end_date),
-            created_by: Set(created_by),
-            created_at: NotSet
+            created_by: Set(Some(created_by.to_string())),
+            created_at: NotSet,
+            updated_at: NotSet
         };
         
         let workorder = workorder
@@ -61,7 +62,7 @@ impl AbstractWorkOrder {
     }
     
     /// Paginate WorkOrders
-    pub async fn workorder_pagination(db: &DbConn, user_id: i32, page: u64, workorder_per_page: u64) -> Result<(Vec<WorkOrderModel>, u64)> {
+    pub async fn workorder_pagination(db: &DbConn, user_id: String, page: u64, workorder_per_page: u64) -> Result<(Vec<WorkOrderModel>, u64)> {
         let paginator = WorkOrderEntity::find()
             .filter(workorder::Column::CreatedBy.eq(user_id))
             .order_by_desc(workorder::Column::Id)
