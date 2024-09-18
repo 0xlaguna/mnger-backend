@@ -8,13 +8,12 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-
         let insert = Query::insert()
             .into_table(VerificationType::Table)
             .columns([
-                VerificationType::Id, 
+                VerificationType::Id,
                 VerificationType::Name,
-                VerificationType::Enabled
+                VerificationType::Enabled,
             ])
             .values_panic([1.into(), "Email".into(), true.into()])
             .to_owned();

@@ -18,7 +18,7 @@ impl MigrationTrait for Migration {
                             .integer()
                             .auto_increment()
                             .primary_key()
-                            .not_null()
+                            .not_null(),
                     )
                     .col(ColumnDef::new(Verification::UserId).integer().not_null())
                     .col(ColumnDef::new(Verification::TypeId).integer().not_null())
@@ -26,8 +26,9 @@ impl MigrationTrait for Migration {
                     .col(ColumnDef::new(Verification::Pending).boolean())
                     .col(ColumnDef::new(Verification::ExpiresAt).timestamp_with_time_zone())
                     .col(ColumnDef::new(Verification::Enabled).boolean())
-                    .to_owned()
-            ).await?;
+                    .to_owned(),
+            )
+            .await?;
 
         manager
             .create_table(
@@ -39,28 +40,25 @@ impl MigrationTrait for Migration {
                             .integer()
                             .auto_increment()
                             .primary_key()
-                            .not_null()
+                            .not_null(),
                     )
                     .col(ColumnDef::new(VerificationType::Name).string().not_null())
                     .col(ColumnDef::new(VerificationType::Description).string())
                     .col(ColumnDef::new(VerificationType::Enabled).boolean())
-                    .to_owned()
-            ).await?;
+                    .to_owned(),
+            )
+            .await?;
 
         Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
-            .drop_table(
-                Table::drop().table(Verification::Table).to_owned()
-            )
+            .drop_table(Table::drop().table(Verification::Table).to_owned())
             .await?;
 
         manager
-            .drop_table(
-                Table::drop().table(VerificationType::Table).to_owned()
-            )
+            .drop_table(Table::drop().table(VerificationType::Table).to_owned())
             .await?;
 
         Ok(())

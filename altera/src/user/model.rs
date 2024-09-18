@@ -12,7 +12,7 @@ pub enum Company {
     Logo,
     Website,
     CreatedAt,
-    UpdatedAt
+    UpdatedAt,
 }
 
 #[allow(dead_code)]
@@ -32,7 +32,7 @@ pub enum User {
     Enabled,
     CompanyId,
     CreatedAt,
-    UpdatedAt
+    UpdatedAt,
 }
 
 #[allow(dead_code)]
@@ -42,7 +42,7 @@ pub enum Session {
     Id,
     Token,
     Name,
-    UserId
+    UserId,
 }
 
 #[allow(dead_code)]
@@ -54,7 +54,7 @@ pub enum Team {
     Description,
     CreatedBy,
     CreatedAt,
-    UpdatedAt
+    UpdatedAt,
 }
 
 #[allow(dead_code)]
@@ -64,7 +64,7 @@ pub enum TeamParticipant {
     Id,
     TeamId,
     UserId,
-    JoinedAt
+    JoinedAt,
 }
 
 #[allow(dead_code)]
@@ -77,7 +77,7 @@ pub enum Verification {
     Token,
     Pending,
     ExpiresAt,
-    Enabled
+    Enabled,
 }
 
 #[derive(DeriveIden)]
@@ -86,5 +86,5 @@ pub enum VerificationType {
     Id,
     Name,
     Description,
-    Enabled
+    Enabled,
 }

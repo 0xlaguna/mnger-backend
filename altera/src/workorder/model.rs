@@ -12,7 +12,7 @@ pub enum WorkOrder {
     EndDate,
     CreatedBy,
     CreatedAt,
-    UpdatedAt
+    UpdatedAt,
 }
 
 #[allow(dead_code)]
@@ -22,5 +22,5 @@ pub enum WorkOrderAssignment {
     WorkOrderId,
     UserId,
     TeamId,
-    AssignedAt
+    AssignedAt,
 }

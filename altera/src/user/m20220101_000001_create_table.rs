@@ -1,6 +1,6 @@
 use sea_orm_migration::prelude::*;
 
-use crate::user::model::{User, Session};
+use crate::user::model::{Session, User};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -8,7 +8,6 @@ pub struct Migration;
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-
         manager
             .get_connection()
             .execute_unprepared(
@@ -105,7 +104,6 @@ impl MigrationTrait for Migration {
             ).await?;
 
         Ok(())
-
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
@@ -116,7 +114,7 @@ impl MigrationTrait for Migration {
         manager
             .drop_table(Table::drop().table(Session::Table).to_owned())
             .await?;
-        
+
         Ok(())
     }
 }
