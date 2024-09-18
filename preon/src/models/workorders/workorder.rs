@@ -1,17 +1,11 @@
 use rocket::serde::{Deserialize, Serialize};
 use sea_orm::entity::prelude::*;
 
-#[derive(
-    Clone, Debug, PartialEq, Eq, DeriveEntityModel, Deserialize, Serialize
-)]
+#[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel, Deserialize, Serialize)]
 #[serde(crate = "rocket::serde")]
 #[sea_orm(table_name = "work_order")]
 pub struct Model {
-    #[sea_orm(
-        primary_key,
-        auto_increment = false,
-        column_type = "Text"
-    )]
+    #[sea_orm(primary_key, auto_increment = false, column_type = "Text")]
     pub id: String,
 
     /// Title

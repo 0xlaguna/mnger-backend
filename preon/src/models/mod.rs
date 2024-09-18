@@ -1,28 +1,28 @@
 mod users {
-    pub mod user;
-    pub mod session;
     pub mod company;
+    pub mod session;
     pub mod team;
     pub mod team_participant;
-    pub mod verification;
+    pub mod user;
     pub mod verficiation_type;
+    pub mod verification;
 }
 
-pub use users::*;
-pub use user::Model as User;
 pub use session::Model as Session;
+pub use user::Model as User;
+pub use users::*;
 
 mod authorization {
-    pub mod role;
-    pub mod permission;
-    pub mod role_permission;
     pub mod module;
+    pub mod permission;
+    pub mod role;
     pub mod role_module;
+    pub mod role_permission;
 }
 pub use authorization::*;
 
 mod workorders {
-    pub mod workorder;
     pub mod work_order_assignment;
+    pub mod workorder;
 }
 pub use workorders::*;

@@ -1,7 +1,6 @@
 use rocket::serde::{Deserialize, Serialize};
 use sea_orm::entity::prelude::*;
 
-
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Deserialize, Serialize)]
 #[sea_orm(table_name = "permission")]
 pub struct Model {

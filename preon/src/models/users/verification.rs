@@ -1,9 +1,7 @@
 use rocket::serde::{Deserialize, Serialize};
 use sea_orm::entity::prelude::*;
 
-#[derive(
-    Clone, Debug, PartialEq, Eq, DeriveEntityModel, Deserialize, Serialize,
-)]
+#[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel, Deserialize, Serialize)]
 #[serde(crate = "rocket::serde")]
 #[sea_orm(table_name = "verification")]
 pub struct Model {

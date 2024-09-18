@@ -29,7 +29,7 @@ pub enum Error {
     NotFound,
     InvalidSession,
     FailedValidation {
-        info: String
+        info: String,
     },
 
     MissingHeaders,

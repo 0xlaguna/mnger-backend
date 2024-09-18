@@ -1,26 +1,23 @@
 use crate::models::workorder::{
-    self,
-    Entity as WorkOrderEntity,
-    Model as WorkOrderModel,
-    ActiveModel as WorkOrderActiveModel
+    self, ActiveModel as WorkOrderActiveModel, Entity as WorkOrderEntity, Model as WorkOrderModel,
 };
 
 use sea_orm::entity::prelude::*;
 use sea_orm::*;
 
-use crate::{Result, Error};
+use crate::{Error, Result};
 
 pub struct AbstractWorkOrder;
 
 impl AbstractWorkOrder {
     /// Create a new WorkOrder
     pub async fn create_work_order(
-        db: &DbConn, 
+        db: &DbConn,
         title: String,
         description: String,
         start_date: DateTimeWithTimeZone,
         end_date: Option<DateTimeWithTimeZone>,
-        created_by: &str
+        created_by: &str,
     ) -> Result<WorkOrderModel> {
         let workorder = WorkOrderActiveModel {
             id: NotSet,
@@ -31,18 +28,18 @@ impl AbstractWorkOrder {
             end_date: Set(end_date),
             created_by: Set(Some(created_by.to_string())),
             created_at: NotSet,
-            updated_at: NotSet
+            updated_at: NotSet,
         };
-        
+
         let workorder = workorder
             .insert(db)
             .await
-            .map_err(|e| Error::DatabaseError { 
-                operation: "create_workorder", 
+            .map_err(|e| Error::DatabaseError {
+                operation: "create_workorder",
                 with: "sessions",
-                info: e.to_string()
+                info: e.to_string(),
             })?;
-        
+
         Ok(workorder)
     }
 
@@ -51,18 +48,23 @@ impl AbstractWorkOrder {
         let workorder = WorkOrderEntity::find_by_id(id)
             .one(db)
             .await
-            .map_err(|e| Error::DatabaseError { 
-                operation: "find_one", 
+            .map_err(|e| Error::DatabaseError {
+                operation: "find_one",
                 with: "sessions",
-                info: e.to_string()
+                info: e.to_string(),
             })?
             .ok_or(Error::NotFound)?;
 
         Ok(workorder)
     }
-    
+
     /// Paginate WorkOrders
-    pub async fn workorder_pagination(db: &DbConn, user_id: String, page: u64, workorder_per_page: u64) -> Result<(Vec<WorkOrderModel>, u64)> {
+    pub async fn workorder_pagination(
+        db: &DbConn,
+        user_id: String,
+        page: u64,
+        workorder_per_page: u64,
+    ) -> Result<(Vec<WorkOrderModel>, u64)> {
         let paginator = WorkOrderEntity::find()
             .filter(workorder::Column::CreatedBy.eq(user_id))
             .order_by_desc(workorder::Column::Id)
@@ -71,10 +73,10 @@ impl AbstractWorkOrder {
         let num_pages = paginator
             .num_pages()
             .await
-            .map_err(|e| Error::DatabaseError { 
-                operation: "workorder_pagination", 
+            .map_err(|e| Error::DatabaseError {
+                operation: "workorder_pagination",
                 with: "sessions",
-                info: e.to_string()
+                info: e.to_string(),
             })?;
 
         paginator
@@ -86,6 +88,5 @@ impl AbstractWorkOrder {
                 with: "sessions",
                 info: e.to_string(),
             })
-
     }
 }

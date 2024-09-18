@@ -1,4 +1,4 @@
-use rocket::serde::{Serialize, Deserialize};
+use rocket::serde::{Deserialize, Serialize};
 use sea_orm::prelude::DateTimeWithTimeZone;
 use utoipa::ToSchema;
 
@@ -18,7 +18,6 @@ pub struct DataCreateWorkOrder {
 
     /// End Date
     pub end_date: Option<DateTimeWithTimeZone>,
-
 }
 
 /// WorkOrder Iitem
@@ -40,7 +39,7 @@ pub struct WorkOrderItem {
     pub end_date: Option<DateTimeWithTimeZone>,
 
     /// Created At
-    pub created_at: DateTimeWithTimeZone
+    pub created_at: DateTimeWithTimeZone,
 }
 
 /// WorkOrder List Data
@@ -50,7 +49,7 @@ pub struct WorkOrderListData {
     pub list: Vec<WorkOrderItem>,
 
     /// Total pages
-    pub pages: u64
+    pub pages: u64,
 }
 
 impl From<workorder::Model> for WorkOrderItem {
@@ -61,7 +60,7 @@ impl From<workorder::Model> for WorkOrderItem {
             description: model.description,
             start_date: model.start_date,
             end_date: model.end_date,
-            created_at: model.created_at
+            created_at: model.created_at,
         }
     }
 }

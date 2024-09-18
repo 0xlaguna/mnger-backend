@@ -1,13 +1,12 @@
 use rocket::serde::{Deserialize, Serialize};
 use sea_orm::entity::prelude::*;
 
-
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Deserialize, Serialize)]
 #[sea_orm(table_name = "role_permission")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub role_id: i32,
-    
+
     #[sea_orm(primary_key, auto_increment = false)]
     pub permission_id: i32,
 }
