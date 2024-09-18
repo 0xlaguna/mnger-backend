@@ -1,8 +1,8 @@
 use rocket::Route;
 
 pub mod create_workorder;
-pub mod list_workorders;
 pub mod fetch_workorder;
+pub mod list_workorders;
 
 pub fn workorder_routes() -> Vec<Route> {
     routes![

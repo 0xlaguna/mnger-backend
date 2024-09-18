@@ -1,22 +1,19 @@
 use rocket::serde::{Deserialize, Serialize};
 use sea_orm::entity::prelude::*;
+use strong_id::strong_uuid;
 
-#[derive(
-    Clone, Debug, PartialEq, Eq, DeriveEntityModel, Deserialize, Serialize,
-)]
+strong_uuid!(pub struct UserId(pub Uuid => "user"));
+
+#[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel, Deserialize, Serialize)]
 #[serde(crate = "rocket::serde")]
 #[sea_orm(table_name = "user")]
 pub struct Model {
-    #[sea_orm(
-        primary_key,
-        auto_increment = false,
-        column_type = "Text"
-    )]
+    #[sea_orm(primary_key, auto_increment = false, column_type = "Text")]
     pub id: String,
 
     /// Username
     pub username: Option<String>,
-    
+
     /// Email
     #[sea_orm(unique)]
     pub email: String,
@@ -37,7 +34,7 @@ pub struct Model {
     pub avatar: Option<String>,
 
     pub timezone: Option<String>,
-    
+
     /// Argon2 hashed password
     pub password: String,
 
@@ -48,7 +45,7 @@ pub struct Model {
     pub company_id: Option<String>,
 
     pub created_at: DateTimeWithTimeZone,
-    
+
     pub updated_at: Option<DateTimeWithTimeZone>,
 }
 
