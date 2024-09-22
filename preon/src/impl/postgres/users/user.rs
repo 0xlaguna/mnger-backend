@@ -1,15 +1,19 @@
 use std::io::Write;
 
 use crate::{
-    dto::users::DataEditUser,
-    models::user::{
-        self, ActiveModel as UserActiveModel, Entity as UserEntity, Model as UserModel, UserId,
+    dto::users::{DataCreateAccount, DataEditUser},
+    models::{
+        user::{
+            self, ActiveModel as UserActiveModel, Entity as UserEntity, Model as UserModel, UserId,
+        },
+        verficiation_type::{self, Entity as VerificationTypeEntity},
+        verification::{ActiveModel as VerificationActiveModel, Entity as VerificationEntity},
     },
     r#impl::storage::s3::{Opt, S3},
+    util::time::Time,
 };
 use sea_orm::*;
 
-use chrono::{FixedOffset, Utc};
 use strong_id::StrongUuid;
 use tempfile::NamedTempFile;
 use ulid::Ulid;
@@ -33,33 +37,38 @@ impl AbstractUser {
         Ok(user)
     }
 
-    /// Create a new user
-    pub async fn create_user(
-        db: &DbConn,
-        email: String,
-        password: String,
-        first_name: String,
-        middle_name: Option<String>,
-        last_name: String,
-    ) -> Result<UserModel> {
-        let password = hash_password(password)?;
+    pub async fn fetch_me(db: &DbConn, id: &str) -> Result<UserModel> {
+        let user = UserEntity::find_by_id(id)
+            .one(db)
+            .await
+            .map_err(|e| Error::DatabaseError {
+                operation: "find_one",
+                with: "sessions",
+                info: e.to_string(),
+            })?
+            .ok_or(Error::NotFound)?;
 
-        let fixed_now = Utc::now().with_timezone(&FixedOffset::east_opt(0).unwrap());
+        Ok(user)
+    }
+
+    /// Create a new user
+    pub async fn create_user(db: &DbConn, data: DataCreateAccount) -> Result<UserModel> {
+        let password = hash_password(data.password)?;
 
         let user_id = UserId::now_v7().to_string();
 
         let user = UserActiveModel {
             id: Set(user_id),
             username: NotSet,
-            email: Set(email),
+            email: Set(data.email),
             password: Set(password),
-            first_name: Set(first_name),
-            middle_name: Set(middle_name),
-            last_name: Set(last_name),
+            first_name: Set(data.first_name),
+            middle_name: Set(data.middle_name),
+            last_name: Set(data.last_name),
             enabled: Set(true),
             avatar: NotSet,
             company_id: NotSet,
-            created_at: Set(fixed_now),
+            created_at: Set(Time::now_with_offset()),
             dob: NotSet,
             timezone: NotSet,
             updated_at: NotSet,
@@ -70,6 +79,38 @@ impl AbstractUser {
             with: "sessions",
             info: e.to_string(),
         })?;
+
+        let verification_types = VerificationTypeEntity::find()
+            .filter(verficiation_type::Column::Enabled.eq(true))
+            .all(db)
+            .await
+            .map_err(|e| Error::DatabaseError {
+                operation: "create_user",
+                with: "sessions",
+                info: e.to_string(),
+            })?;
+
+        let i_verification_types: Vec<VerificationActiveModel> = verification_types
+            .into_iter()
+            .map(|i| VerificationActiveModel {
+                id: NotSet,
+                user_id: Set(user.id.clone()),
+                type_id: Set(i.id),
+                token: NotSet,
+                pending: Set(Some(true)),
+                expires_at: Set(Some(Time::now_plus_days(3))),
+                enabled: Set(Some(true)),
+            })
+            .collect();
+
+        VerificationEntity::insert_many(i_verification_types)
+            .exec(db)
+            .await
+            .map_err(|e| Error::DatabaseError {
+                operation: "create_user",
+                with: "sessions",
+                info: e.to_string(),
+            })?;
 
         Ok(user)
     }

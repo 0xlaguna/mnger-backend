@@ -17,6 +17,30 @@ pub enum WorkOrder {
 
 #[allow(dead_code)]
 #[derive(DeriveIden)]
+pub enum WorkOrderStatus {
+    Table,
+    Id,
+    Name,
+    Icon,
+    Color,
+    Description,
+    Enabled,
+}
+
+#[allow(dead_code)]
+#[derive(DeriveIden)]
+pub enum WorkOrderPriority {
+    Table,
+    Id,
+    Name,
+    Icon,
+    Color,
+    Description,
+    Enabled,
+}
+
+#[allow(dead_code)]
+#[derive(DeriveIden)]
 pub enum WorkOrderAssignment {
     Table,
     WorkOrderId,

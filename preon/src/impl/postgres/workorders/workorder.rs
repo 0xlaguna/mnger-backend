@@ -1,9 +1,15 @@
-use crate::models::workorder::{
-    self, ActiveModel as WorkOrderActiveModel, Entity as WorkOrderEntity, Model as WorkOrderModel,
+use crate::{
+    dto::work_order::DataCreateWorkOrder,
+    models::workorder::{
+        self, ActiveModel as WorkOrderActiveModel, Entity as WorkOrderEntity,
+        Model as WorkOrderModel, WorkOrderId,
+    },
+    util::time::Time,
 };
 
 use sea_orm::entity::prelude::*;
 use sea_orm::*;
+use strong_id::StrongUuid;
 
 use crate::{Error, Result};
 
@@ -13,21 +19,19 @@ impl AbstractWorkOrder {
     /// Create a new WorkOrder
     pub async fn create_work_order(
         db: &DbConn,
-        title: String,
-        description: String,
-        start_date: DateTimeWithTimeZone,
-        end_date: Option<DateTimeWithTimeZone>,
+        data: DataCreateWorkOrder,
         created_by: &str,
     ) -> Result<WorkOrderModel> {
+        let work_order_id = WorkOrderId::now_v7().to_string();
         let workorder = WorkOrderActiveModel {
-            id: NotSet,
-            title: Set(title),
-            description: Set(description),
+            id: Set(work_order_id),
+            title: Set(data.title),
+            description: Set(data.description),
             status: NotSet,
-            start_date: Set(start_date),
-            end_date: Set(end_date),
+            start_date: Set(data.start_date),
+            end_date: Set(data.end_date),
             created_by: Set(Some(created_by.to_string())),
-            created_at: NotSet,
+            created_at: Set(Time::now_with_offset()),
             updated_at: NotSet,
         };
 
@@ -61,7 +65,7 @@ impl AbstractWorkOrder {
     /// Paginate WorkOrders
     pub async fn workorder_pagination(
         db: &DbConn,
-        user_id: String,
+        user_id: &str,
         page: u64,
         workorder_per_page: u64,
     ) -> Result<(Vec<WorkOrderModel>, u64)> {

@@ -1,6 +1,10 @@
 use rocket::serde::{Deserialize, Serialize};
 use sea_orm::entity::prelude::*;
 
+use strong_id::strong_uuid;
+
+strong_uuid!(pub struct WorkOrderId(pub Uuid => "wo"));
+
 #[derive(Clone, Debug, PartialEq, Eq, DeriveEntityModel, Deserialize, Serialize)]
 #[serde(crate = "rocket::serde")]
 #[sea_orm(table_name = "work_order")]

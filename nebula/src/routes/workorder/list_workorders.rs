@@ -27,7 +27,7 @@ pub async fn req(
     let per_page = per_page.unwrap_or(4);
 
     let workorders =
-        AbstractWorkOrder::workorder_pagination(db, _session.user_id, page, per_page).await?;
+        AbstractWorkOrder::workorder_pagination(db, &_session.user_id, page, per_page).await?;
 
     let response: WorkOrderListData = workorders.into();
 

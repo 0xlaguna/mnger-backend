@@ -20,8 +20,12 @@ impl MigrationTrait for Migration {
                             .primary_key()
                             .not_null(),
                     )
-                    .col(ColumnDef::new(Verification::UserId).integer().not_null())
-                    .col(ColumnDef::new(Verification::TypeId).integer().not_null())
+                    .col(ColumnDef::new(Verification::UserId).text().not_null())
+                    .col(
+                        ColumnDef::new(Verification::TypeId)
+                            .small_integer()
+                            .not_null(),
+                    )
                     .col(ColumnDef::new(Verification::Token).string())
                     .col(ColumnDef::new(Verification::Pending).boolean())
                     .col(ColumnDef::new(Verification::ExpiresAt).timestamp_with_time_zone())
@@ -37,10 +41,8 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(
                         ColumnDef::new(VerificationType::Id)
-                            .integer()
-                            .auto_increment()
-                            .primary_key()
-                            .not_null(),
+                            .small_integer()
+                            .primary_key(),
                     )
                     .col(ColumnDef::new(VerificationType::Name).string().not_null())
                     .col(ColumnDef::new(VerificationType::Description).string())

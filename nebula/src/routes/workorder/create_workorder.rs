@@ -26,15 +26,7 @@ pub async fn req(
 
     let data = data.into_inner();
 
-    let _ = AbstractWorkOrder::create_work_order(
-        db,
-        data.title,
-        data.description,
-        data.start_date,
-        data.end_date,
-        &_session.user_id,
-    )
-    .await?;
+    let _ = AbstractWorkOrder::create_work_order(db, data, &_session.user_id).await?;
 
     Ok(status::NoContent)
 }

@@ -8,9 +8,9 @@ pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
 
-    pub user_id: i32,
+    pub user_id: String,
 
-    pub type_id: i32,
+    pub type_id: i16,
 
     pub token: Option<String>,
 

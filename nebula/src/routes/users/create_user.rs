@@ -24,15 +24,7 @@ pub async fn req(
 
     let data = data.into_inner();
 
-    let _ = AbstractUser::create_user(
-        db,
-        data.email,
-        data.password,
-        data.first_name,
-        data.middle_name,
-        data.last_name,
-    )
-    .await?;
+    let _ = AbstractUser::create_user(db, data).await?;
 
     Ok(status::NoContent)
 }
