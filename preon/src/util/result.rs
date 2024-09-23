@@ -38,6 +38,16 @@ pub enum Error {
 /// Result type with custom Error
 pub type Result<T, E = Error> = std::result::Result<T, E>;
 
+impl From<sea_orm::DbErr> for Error {
+    fn from(value: sea_orm::DbErr) -> Self {
+        Error::DatabaseError {
+            operation: "",
+            with: "sessions",
+            info: value.to_string(),
+        }
+    }
+}
+
 /// HTTP response builder for Error enum
 impl<'r> Responder<'r, 'static> for Error {
     fn respond_to(self, _: &'r Request<'_>) -> response::Result<'static> {

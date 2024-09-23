@@ -1,8 +1,9 @@
 use std::io::Write;
 
 use crate::{
-    dto::users::{DataCreateAccount, DataEditUser},
+    dto::users::{DataCreateAccount, DataEditUser, UserFetchMeInitialData, UserGetMeData},
     models::{
+        timezone::Entity as TimezoneEntity,
         user::{
             self, ActiveModel as UserActiveModel, Entity as UserEntity, Model as UserModel, UserId,
         },
@@ -26,33 +27,31 @@ impl AbstractUser {
     pub async fn fetch_user(db: &DbConn, id: &str) -> Result<UserModel> {
         let user = UserEntity::find_by_id(id)
             .one(db)
-            .await
-            .map_err(|e| Error::DatabaseError {
-                operation: "find_one",
-                with: "sessions",
-                info: e.to_string(),
-            })?
+            .await?
             .ok_or(Error::NotFound)?;
 
         Ok(user)
     }
 
-    pub async fn fetch_me(db: &DbConn, id: &str) -> Result<UserModel> {
+    pub async fn fetch_me(db: &DbConn, id: &str) -> Result<UserFetchMeInitialData> {
         let user = UserEntity::find_by_id(id)
             .one(db)
-            .await
-            .map_err(|e| Error::DatabaseError {
-                operation: "find_one",
-                with: "sessions",
-                info: e.to_string(),
-            })?
+            .await?
             .ok_or(Error::NotFound)?;
 
-        Ok(user)
+        let timezones = TimezoneEntity::find().all(db).await?;
+
+        let user: UserGetMeData = user.into();
+
+        let data = UserFetchMeInitialData { user, timezones };
+
+        Ok(data)
     }
 
     /// Create a new user
     pub async fn create_user(db: &DbConn, data: DataCreateAccount) -> Result<UserModel> {
+        let txn = db.begin().await?;
+
         let password = hash_password(data.password)?;
 
         let user_id = UserId::now_v7().to_string();
@@ -74,21 +73,12 @@ impl AbstractUser {
             updated_at: NotSet,
         };
 
-        let user = user.insert(db).await.map_err(|e| Error::DatabaseError {
-            operation: "create_user",
-            with: "sessions",
-            info: e.to_string(),
-        })?;
+        let user = user.insert(db).await?;
 
         let verification_types = VerificationTypeEntity::find()
             .filter(verficiation_type::Column::Enabled.eq(true))
             .all(db)
-            .await
-            .map_err(|e| Error::DatabaseError {
-                operation: "create_user",
-                with: "sessions",
-                info: e.to_string(),
-            })?;
+            .await?;
 
         let i_verification_types: Vec<VerificationActiveModel> = verification_types
             .into_iter()
@@ -104,13 +94,10 @@ impl AbstractUser {
             .collect();
 
         VerificationEntity::insert_many(i_verification_types)
-            .exec(db)
-            .await
-            .map_err(|e| Error::DatabaseError {
-                operation: "create_user",
-                with: "sessions",
-                info: e.to_string(),
-            })?;
+            .exec(&txn)
+            .await?;
+
+        txn.commit().await?;
 
         Ok(user)
     }
@@ -120,14 +107,7 @@ impl AbstractUser {
         user_id: &str,
         data: DataEditUser<'_>,
     ) -> Result<UserModel> {
-        let user = UserEntity::find_by_id(user_id)
-            .one(db)
-            .await
-            .map_err(|e: DbErr| Error::DatabaseError {
-                operation: "find_user",
-                with: "sessions",
-                info: e.to_string(),
-            })?;
+        let user = UserEntity::find_by_id(user_id).one(db).await?;
 
         // Delete previous avatar if any
         if let Some(old_avatar) = user.clone().unwrap().avatar {
@@ -171,14 +151,7 @@ impl AbstractUser {
             user.avatar = Set(Some(file_key));
         };
 
-        let user = user
-            .update(db)
-            .await
-            .map_err(|e: DbErr| Error::DatabaseError {
-                operation: "update_user",
-                with: "sessions",
-                info: e.to_string(),
-            })?;
+        let user = user.update(db).await?;
 
         Ok(user)
     }
@@ -193,23 +166,9 @@ impl AbstractUser {
             .order_by_asc(user::Column::Id)
             .paginate(db, users_per_page);
 
-        let num_pages = paginator
-            .num_pages()
-            .await
-            .map_err(|e| Error::DatabaseError {
-                operation: "find_users_num_pages",
-                with: "sessions",
-                info: e.to_string(),
-            })?;
+        let num_pages = paginator.num_pages().await?;
 
-        let users = paginator
-            .fetch_page(page - 1)
-            .await
-            .map_err(|e| Error::DatabaseError {
-                operation: "find_users_in_page",
-                with: "sessions",
-                info: e.to_string(),
-            })?;
+        let users = paginator.fetch_page(page - 1).await?;
 
         Ok((users, num_pages))
     }

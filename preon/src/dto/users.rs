@@ -4,6 +4,7 @@ use rocket::http::ContentType;
 use rocket::serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
+use crate::models::timezone::Model as TimezoneModel;
 use crate::models::{user, Session};
 use crate::r#impl::storage::s3::S3;
 
@@ -127,6 +128,14 @@ impl From<user::Model> for UserGetMeData {
             avatar: S3::extract_filename(model.avatar),
         }
     }
+}
+
+/// # User Fetch Me Initial
+#[derive(Serialize, Deserialize, ToSchema)]
+pub struct UserFetchMeInitialData {
+    pub user: UserGetMeData,
+
+    pub timezones: Vec<TimezoneModel>,
 }
 
 /// # Edit Account Data

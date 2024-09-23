@@ -3,6 +3,7 @@ mod users {
     pub mod session;
     pub mod team;
     pub mod team_participant;
+    pub mod timezone;
     pub mod user;
     pub mod verficiation_type;
     pub mod verification;

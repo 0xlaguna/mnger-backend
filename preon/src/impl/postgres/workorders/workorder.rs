@@ -35,14 +35,7 @@ impl AbstractWorkOrder {
             updated_at: NotSet,
         };
 
-        let workorder = workorder
-            .insert(db)
-            .await
-            .map_err(|e| Error::DatabaseError {
-                operation: "create_workorder",
-                with: "sessions",
-                info: e.to_string(),
-            })?;
+        let workorder = workorder.insert(db).await?;
 
         Ok(workorder)
     }
@@ -51,12 +44,7 @@ impl AbstractWorkOrder {
     pub async fn fetch_work_order(db: &DbConn, id: &str) -> Result<WorkOrderModel> {
         let workorder = WorkOrderEntity::find_by_id(id)
             .one(db)
-            .await
-            .map_err(|e| Error::DatabaseError {
-                operation: "find_one",
-                with: "sessions",
-                info: e.to_string(),
-            })?
+            .await?
             .ok_or(Error::NotFound)?;
 
         Ok(workorder)
@@ -74,23 +62,10 @@ impl AbstractWorkOrder {
             .order_by_desc(workorder::Column::Id)
             .paginate(db, workorder_per_page);
 
-        let num_pages = paginator
-            .num_pages()
-            .await
-            .map_err(|e| Error::DatabaseError {
-                operation: "workorder_pagination",
-                with: "sessions",
-                info: e.to_string(),
-            })?;
+        let num_pages = paginator.num_pages().await?;
 
-        paginator
-            .fetch_page(page - 1)
-            .await
-            .map(|p| (p, num_pages))
-            .map_err(|e| Error::DatabaseError {
-                operation: "workorder_pagination",
-                with: "sessions",
-                info: e.to_string(),
-            })
+        let wos = paginator.fetch_page(page - 1).await?;
+
+        Ok((wos, num_pages))
     }
 }

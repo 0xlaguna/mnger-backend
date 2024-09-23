@@ -28,11 +28,7 @@ impl AbstractAccount {
             expires_at: Set(expires_at),
         };
 
-        let session = session.insert(db).await.map_err(|e| Error::DatabaseError {
-            operation: "create_session",
-            with: "sessions",
-            info: e.to_string(),
-        })?;
+        let session = session.insert(db).await?;
 
         Ok(session)
     }
@@ -42,12 +38,7 @@ impl AbstractAccount {
         let session = SessonEntity::find()
             .filter(session::Column::Token.eq(token))
             .one(db)
-            .await
-            .map_err(|e| Error::DatabaseError {
-                operation: "find_one",
-                with: "sessions",
-                info: e.to_string(),
-            })?
+            .await?
             .ok_or(Error::InvalidSession)?;
 
         Ok(session)
@@ -57,12 +48,7 @@ impl AbstractAccount {
         let account = UserEntity::find()
             .filter(user::Column::Email.eq(email))
             .one(db)
-            .await
-            .map_err(|e| Error::DatabaseError {
-                operation: "find_one",
-                with: "sessions",
-                info: e.to_string(),
-            })?
+            .await?
             .ok_or(Error::NotFound)?;
 
         Ok(account)
