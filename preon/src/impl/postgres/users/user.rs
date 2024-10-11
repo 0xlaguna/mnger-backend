@@ -107,6 +107,8 @@ impl AbstractUser {
         user_id: &str,
         data: DataEditUser<'_>,
     ) -> Result<UserModel> {
+        let txn = db.begin().await?;
+
         let user = UserEntity::find_by_id(user_id).one(db).await?;
 
         // Delete previous avatar if any
@@ -153,6 +155,8 @@ impl AbstractUser {
 
         let user = user.update(db).await?;
 
+        txn.commit().await?;
+
         Ok(user)
     }
 
@@ -163,11 +167,10 @@ impl AbstractUser {
     ) -> Result<(Vec<UserModel>, u64)> {
         // Setup paginator
         let paginator = UserEntity::find()
-            .order_by_asc(user::Column::Id)
+            .order_by_desc(user::Column::Id)
             .paginate(db, users_per_page);
 
         let num_pages = paginator.num_pages().await?;
-
         let users = paginator.fetch_page(page - 1).await?;
 
         Ok((users, num_pages))

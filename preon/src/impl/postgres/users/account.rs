@@ -2,9 +2,10 @@ use crate::models::session::{
     self, ActiveModel as SessionActiveModel, Entity as SessonEntity, Model as SessionModel,
 };
 use crate::models::user::{self, Entity as UserEntity, Model as UserModel};
-use chrono::{Duration, FixedOffset, Utc};
 use nanoid::nanoid;
 use sea_orm::*;
+
+use crate::util::time::Time;
 
 use crate::{Error, Result};
 
@@ -17,8 +18,7 @@ impl AbstractAccount {
         _name: Option<&str>,
         user_id: String,
     ) -> Result<SessionModel> {
-        let fixed_now = Utc::now().with_timezone(&FixedOffset::east_opt(0).unwrap());
-        let expires_at = fixed_now + Duration::days(3);
+        let expires_at = Time::now_plus_days(3);
 
         let session = SessionActiveModel {
             id: NotSet,
