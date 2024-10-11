@@ -1,5 +1,21 @@
 use sea_orm_migration::prelude::*;
 
+#[allow(dead_code)]
+#[derive(DeriveIden)]
+pub enum Company {
+    Table,
+    Id,
+    Name,
+    Address,
+    PhoneNumber,
+    Email,
+    Logo,
+    Website,
+    CreatedAt,
+    UpdatedAt,
+}
+
+#[allow(dead_code)]
 #[derive(DeriveIden)]
 pub enum User {
     Table,
@@ -9,20 +25,49 @@ pub enum User {
     FirstName,
     MiddleName,
     LastName,
+    DoB,
     Avatar,
+    Timezone,
     Password,
-    Disabled
+    Enabled,
+    CompanyId,
+    CreatedAt,
+    UpdatedAt,
 }
 
+#[allow(dead_code)]
 #[derive(DeriveIden)]
 pub enum Session {
     Table,
     Id,
     Token,
     Name,
-    UserId
+    UserId,
 }
 
+#[allow(dead_code)]
+#[derive(DeriveIden)]
+pub enum Team {
+    Table,
+    Id,
+    Name,
+    Description,
+    CreatedBy,
+    CreatedAt,
+    UpdatedAt,
+}
+
+#[allow(dead_code)]
+#[derive(DeriveIden)]
+pub enum TeamParticipant {
+    Table,
+    Id,
+    TeamId,
+    UserId,
+    JoinedAt,
+}
+
+#[allow(dead_code)]
 #[derive(DeriveIden)]
 pub enum Verification {
     Table,
@@ -32,7 +77,7 @@ pub enum Verification {
     Token,
     Pending,
     ExpiresAt,
-    Enabled
+    Enabled,
 }
 
 #[derive(DeriveIden)]
@@ -41,5 +86,5 @@ pub enum VerificationType {
     Id,
     Name,
     Description,
-    Enabled
+    Enabled,
 }

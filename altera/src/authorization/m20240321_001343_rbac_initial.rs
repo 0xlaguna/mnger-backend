@@ -1,12 +1,6 @@
 use sea_orm_migration::prelude::*;
 
-use crate::authorization::model::{
-    Role, 
-    Permission, 
-    RolePermission,
-    Module,
-    RoleModule
-};
+use crate::authorization::model::{Module, Permission, Role, RoleModule, RolePermission};
 
 #[derive(DeriveMigrationName)]
 pub struct Migration;
@@ -29,9 +23,10 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(Role::Name).string())
                     .col(ColumnDef::new(Role::Description).string())
-                    .to_owned()
-            ).await?;
-        
+                    .to_owned(),
+            )
+            .await?;
+
         // Permission table
         manager
             .create_table(
@@ -47,9 +42,10 @@ impl MigrationTrait for Migration {
                     )
                     .col(ColumnDef::new(Permission::Name).string())
                     .col(ColumnDef::new(Permission::Description).string())
-                    .to_owned()
-            ).await?;
-        
+                    .to_owned(),
+            )
+            .await?;
+
         // Role-Permission table
         manager
             .create_table(
@@ -58,9 +54,10 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(ColumnDef::new(RolePermission::RoleId).integer())
                     .col(ColumnDef::new(RolePermission::PermissionId).integer())
-                    .to_owned()
-            ).await?;
-        
+                    .to_owned(),
+            )
+            .await?;
+
         // Composite primary key RolePermission(RoleId, PermissionId)
         manager
             .get_connection()
@@ -68,8 +65,9 @@ impl MigrationTrait for Migration {
                 "
                 ALTER TABLE role_permission
                 ADD PRIMARY KEY (role_id, permission_id)
-                "
-            ).await?;
+                ",
+            )
+            .await?;
 
         // Role-Permission FK_role_permission_role_id
         manager
@@ -79,8 +77,9 @@ impl MigrationTrait for Migration {
                     .from(RolePermission::Table, RolePermission::RoleId)
                     .to(Role::Table, Role::Id)
                     .on_delete(ForeignKeyAction::Cascade)
-                    .to_owned()
-            ).await?;
+                    .to_owned(),
+            )
+            .await?;
 
         // Role-Permission FK_role_permission_permission_id
         manager
@@ -90,9 +89,10 @@ impl MigrationTrait for Migration {
                     .from(RolePermission::Table, RolePermission::PermissionId)
                     .to(Permission::Table, Permission::Id)
                     .on_delete(ForeignKeyAction::Cascade)
-                    .to_owned()
-            ).await?;
-        
+                    .to_owned(),
+            )
+            .await?;
+
         // Module table
         manager
             .create_table(
@@ -106,10 +106,11 @@ impl MigrationTrait for Migration {
                             .auto_increment()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(Module::Name).integer())
-                    .col(ColumnDef::new(Module::Description).integer())
-                    .to_owned()
-            ).await?;
+                    .col(ColumnDef::new(Module::Name).string().not_null())
+                    .col(ColumnDef::new(Module::Description).string())
+                    .to_owned(),
+            )
+            .await?;
 
         // RoleModule table
         manager
@@ -119,8 +120,9 @@ impl MigrationTrait for Migration {
                     .if_not_exists()
                     .col(ColumnDef::new(RoleModule::RoleId).integer())
                     .col(ColumnDef::new(RoleModule::ModuleId).integer())
-                    .to_owned()
-            ).await?;
+                    .to_owned(),
+            )
+            .await?;
 
         // Composite primary key RoleModule(RoleId, ModuleId)
         manager
@@ -129,8 +131,9 @@ impl MigrationTrait for Migration {
                 "
                 ALTER TABLE role_module
                 ADD PRIMARY KEY (role_id, module_id)
-                "
-            ).await?;
+                ",
+            )
+            .await?;
 
         // Role-Module FK_role_module_role_id
         manager
@@ -140,8 +143,9 @@ impl MigrationTrait for Migration {
                     .from(RoleModule::Table, RoleModule::RoleId)
                     .to(Role::Table, Role::Id)
                     .on_delete(ForeignKeyAction::Cascade)
-                    .to_owned()
-            ).await?;
+                    .to_owned(),
+            )
+            .await?;
 
         // Role-Module FK_role_module_module_id
         manager
@@ -151,8 +155,9 @@ impl MigrationTrait for Migration {
                     .from(RoleModule::Table, RoleModule::ModuleId)
                     .to(Module::Table, Module::Id)
                     .on_delete(ForeignKeyAction::Cascade)
-                    .to_owned()
-            ).await?;
+                    .to_owned(),
+            )
+            .await?;
 
         Ok(())
     }
@@ -162,27 +167,31 @@ impl MigrationTrait for Migration {
         manager
             .drop_table(Table::drop().table(Role::Table).to_owned())
             .await?;
-        
+
         // Drop permission table
         manager
             .drop_table(Table::drop().table(Permission::Table).to_owned())
             .await?;
 
         // Drop RolePermission table
-        manager.drop_foreign_key(
-            ForeignKey::drop()
-                .name("FK_role_permission_role_id")
-                .table(RolePermission::Table)
-                .to_owned()
-        ).await?;
+        manager
+            .drop_foreign_key(
+                ForeignKey::drop()
+                    .name("FK_role_permission_role_id")
+                    .table(RolePermission::Table)
+                    .to_owned(),
+            )
+            .await?;
 
-        manager.drop_foreign_key(
-            ForeignKey::drop()
-                .name("FK_role_permission_permission_id")
-                .table(RolePermission::Table)
-                .to_owned()
-        ).await?;
-        
+        manager
+            .drop_foreign_key(
+                ForeignKey::drop()
+                    .name("FK_role_permission_permission_id")
+                    .table(RolePermission::Table)
+                    .to_owned(),
+            )
+            .await?;
+
         manager
             .drop_table(Table::drop().table(RolePermission::Table).to_owned())
             .await?;
@@ -194,19 +203,23 @@ impl MigrationTrait for Migration {
             .await?;
 
         // Drop RoleModule tabl
-        manager.drop_foreign_key(
-            ForeignKey::drop()
-                .name("FK_role_module_role_id")
-                .table(RoleModule::Table)
-                .to_owned()
-        ).await?;
+        manager
+            .drop_foreign_key(
+                ForeignKey::drop()
+                    .name("FK_role_module_role_id")
+                    .table(RoleModule::Table)
+                    .to_owned(),
+            )
+            .await?;
 
-        manager.drop_foreign_key(
-            ForeignKey::drop()
-                .name("FK_role_module_module_id")
-                .table(RoleModule::Table)
-                .to_owned()
-        ).await?;
+        manager
+            .drop_foreign_key(
+                ForeignKey::drop()
+                    .name("FK_role_module_module_id")
+                    .table(RoleModule::Table)
+                    .to_owned(),
+            )
+            .await?;
 
         manager
             .drop_table(Table::drop().table(RoleModule::Table).to_owned())

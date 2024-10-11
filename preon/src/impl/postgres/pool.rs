@@ -3,7 +3,6 @@ use sea_orm::ConnectOptions;
 use sea_orm_rocket::{rocket::figment::Figment, Config, Database};
 use std::time::Duration;
 
-
 #[derive(Database, Debug)]
 #[database("sea_orm")]
 pub struct Db(SeaOrmPool);

@@ -13,18 +13,17 @@ use utoipa_swagger_ui::SwaggerUi;
 
 use mnger_preon::r#impl::postgres::pool::Db;
 
-pub mod routes;
-pub mod docs;
 pub mod cors;
-
+pub mod docs;
+pub mod routes;
 
 #[options("/<_..>")]
-fn all_options() { }
+fn all_options() {}
 
 #[tokio::main]
-async fn start()  -> Result<(), rocket::Error> {
+async fn start() -> Result<(), rocket::Error> {
     dotenv().ok();
-    
+
     let rocket = rocket::build()
         .attach(Db::init())
         .attach(Template::fairing())
@@ -32,16 +31,14 @@ async fn start()  -> Result<(), rocket::Error> {
         .mount("/", routes![all_options])
         .mount(
             "/",
-            SwaggerUi::new("/swagger-ui/<_..>").url("/api-docs/openapi.json", docs::ApiDoc::openapi()),
+            SwaggerUi::new("/swagger-ui/<_..>")
+                .url("/api-docs/openapi.json", docs::ApiDoc::openapi()),
         )
         .mount("/", RapiDoc::new("/api-docs/openapi.json").path("/rapidoc"))
         .mount("/", Redoc::with_url("/redoc", docs::ApiDoc::openapi()))
         .mount("/", Scalar::with_url("/scalar", docs::ApiDoc::openapi()));
 
-    routes::mount(rocket)
-        .launch()
-        .await
-        .map(|_| ())
+    routes::mount(rocket).launch().await.map(|_| ())
 }
 
 pub fn main() {
