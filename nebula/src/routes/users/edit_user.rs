@@ -19,7 +19,7 @@ use mnger_preon::{Error, Result};
 pub async fn req(
     conn: Connection<'_, Db>,
     mut _session: Session,
-    target: String,
+    target: &str,
     data: Form<DataEditUser<'_>>,
 ) -> Result<Json<User>> {
     let db = conn.into_inner();
@@ -29,7 +29,7 @@ pub async fn req(
         return Err(Error::NotPrivileged);
     }
 
-    let user = AbstractUser::update_user(db, &target, data).await?;
+    let user = AbstractUser::update_user(db, target, data).await?;
 
     let user: User = user.into();
 

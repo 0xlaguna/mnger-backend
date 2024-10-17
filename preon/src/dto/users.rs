@@ -4,9 +4,13 @@ use rocket::http::ContentType;
 use rocket::serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
 
+use chrono::{DateTime, NaiveDate};
+use validator::{Validate, ValidationError};
+
 use crate::models::timezone::Model as TimezoneModel;
 use crate::models::{user, Session};
 use crate::r#impl::storage::s3::S3;
+use crate::Result;
 
 /// # User
 
@@ -103,6 +107,9 @@ impl From<user::Model> for User {
 /// User getme data
 #[derive(Serialize, Deserialize, ToSchema)]
 pub struct UserGetMeData {
+    /// Id
+    pub id: String,
+
     /// Email
     pub email: String,
 
@@ -121,6 +128,7 @@ pub struct UserGetMeData {
 impl From<user::Model> for UserGetMeData {
     fn from(model: user::Model) -> Self {
         UserGetMeData {
+            id: model.id,
             email: model.email,
             first_name: model.first_name,
             middle_name: model.middle_name,
@@ -181,8 +189,20 @@ impl<'r> FromFormField<'r> for DataEditUserAvatar<'r> {
     }
 }
 
+pub fn validate_dob(date: &str) -> Result<(), ValidationError> {
+    if DateTime::parse_from_rfc3339(date).is_ok() {
+        return Ok(());
+    }
+
+    if NaiveDate::parse_from_str(date, "%Y-%m-%d").is_ok() {
+        return Ok(());
+    }
+
+    Err(ValidationError::new("Invalid ISO 8601 for DoB"))
+}
+
 /// # Edit User Data
-#[derive(ToSchema, FromForm)]
+#[derive(ToSchema, FromForm, Validate)]
 pub struct DataEditUser<'r> {
     /// First Name
     pub first_name: Option<String>,
@@ -191,6 +211,9 @@ pub struct DataEditUser<'r> {
 
     // Last Name
     pub last_name: Option<String>,
+
+    #[validate(custom(function = "validate_dob"))]
+    pub dob: Option<String>,
 
     // Avatar
     pub avatar: Option<DataEditUserAvatar<'r>>,
