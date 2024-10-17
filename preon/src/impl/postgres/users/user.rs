@@ -13,6 +13,7 @@ use crate::{
     r#impl::storage::s3::{Opt, S3},
     util::time::Time,
 };
+use chrono::NaiveDate;
 use sea_orm::*;
 
 use strong_id::StrongUuid;
@@ -128,6 +129,10 @@ impl AbstractUser {
 
         if let Some(last_name) = data.last_name {
             user.first_name = Set(last_name)
+        }
+
+        if let Some(dob) = data.dob {
+            user.dob = Set(Some(NaiveDate::parse_from_str(&dob, "%Y-%m-%d").unwrap()))
         }
 
         // Update user file avatar
